@@ -5,8 +5,6 @@ close all
 
 % set the dataset to use
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
-
-% eifach öpis
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 addpath('providedFunctions'); % add provided functions from exercise sessions
