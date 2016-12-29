@@ -14,7 +14,7 @@ nonmaximum_supression_radius = 8;
 descriptor_radius = 9;
 match_lambda = 5;
 num_keypoints = 1000;
-num_it_ransac = 2000;
+num_it_ransac = 100;
 pixel_tolerance = 1;
 
 harris_0 = harris(img_0, harris_patch_size, harris_kappa);
