@@ -18,32 +18,37 @@ num_it_ransac = 2000;
 pixel_tolerance = 1;
 
 harris_0 = harris(img_0, harris_patch_size, harris_kappa);
-keypoints_0 = selectKeypoints( harris_0, num_keypoints, nonmaximum_supression_radius);
+   keypoints_0 = selectKeypoints( harris_0, num_keypoints, nonmaximum_supression_radius);
+%   keypoints_0 = load('keypoints.txt')';
 descriptors_0 = describeKeypoints(img_0, keypoints_0, descriptor_radius);
 harris_1 = harris(img_1, harris_patch_size, harris_kappa);
 keypoints_1 = selectKeypoints( harris_1, num_keypoints, nonmaximum_supression_radius);
 descriptors_1 = describeKeypoints(img_1, keypoints_1, descriptor_radius);
 all_matches = matchDescriptors(descriptors_0, descriptors_1, match_lambda);
 %num_matches = nnz(all_matches);
-[~, i_1, i_0] = find(all_matches);
+[~, i_0, i_1] = find(all_matches);
 p_0 = homogenize(keypoints_0(:,i_0));
 p_1 = homogenize(keypoints_1(:,i_1));
 max_num_inliers = 0; % start with zero inliers
 
+
+%% Apply ransac
 for i = 1:num_it_ransac
     
-    %%implement ransac for 8pA
+    % randomly pick 8 keypoints
     idx = datasample(1:length(p_0), 8, 2, 'Replace', false);
     keypoint_sample_0 = p_0(:, idx);
     keypoint_sample_1 = p_1(:, idx);
+    
+    % estimate fund Mat. from those 8 points
     F = fundamentalEightPoint_normalized(keypoint_sample_0, keypoint_sample_1);
     
-    % Count inliers:
-    [p_0_norm, T_0] = normalise2dpts(p_0);
-    [p_1_norm, T_1] = normalise2dpts(p_1);
-    errors = abs(diag(p_1_norm'*F*p_0_norm))';
+    % calculate epipolar line distance
+%     errors = distPoint2EpipolarLine(F,p_0,p_1);
+
     is_inlier = errors < pixel_tolerance^2;
     
+    % count inliers
     if nnz(is_inlier) > max_num_inliers && nnz(is_inlier) >= 8
         max_num_inliers = nnz(is_inlier);
         inlier_mask = is_inlier;
@@ -56,14 +61,29 @@ if max_num_inliers == 0
     T = [];
     disp('could not initialize [R|T] matrix. Set to zero');
 else
-    F = estimateEssentialMatrix(p_0(:,inlier_mask), p_1(:,inlier_mask),K,K);
-    [R,u] = decomposeEssentialMatrix(F);
+    %compute essential matrix from all inliers and recover R,T
+    E = estimateEssentialMatrix(p_0(:,inlier_mask), p_1(:,inlier_mask),K,K);
+    [R,u] = decomposeEssentialMatrix(E);
     [R,T] = disambiguateRelativePose(R, u, p_0, p_1, K, K);
-    disp('found R and T with num inliers: ');
-    
 end
+
+%% Debug statements
+disp('found R and T with num inliers: ');
+max_num_inliers
 pose = [R, T]
-state = 0;
+figure
 plot(max_num_inliers_history)
+ figure
+ imshow(img_0);
+  hold on
+x_from = p_0(1,inlier_mask);
+x_to = p_1(1,inlier_mask);
+y_from = p_0(2,inlier_mask);
+y_to = p_1(2,inlier_mask);
+plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
+
+
+
+state = 0;
 end
 

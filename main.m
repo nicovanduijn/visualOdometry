@@ -2,9 +2,10 @@
 clear all % clean up
 clc
 close all
+  rng(1);
 
 % set the dataset to use
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 addpath('providedFunctions'); % add provided functions from exercise sessions
