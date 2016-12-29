@@ -44,7 +44,7 @@ for i = 1:num_it_ransac
     F = fundamentalEightPoint_normalized(keypoint_sample_0, keypoint_sample_1);
     
     % calculate epipolar line distance
-%     errors = distPoint2EpipolarLine(F,p_0,p_1);
+     errors = distPoint2EpipolarLine(F,p_0,p_1);
 
     is_inlier = errors < pixel_tolerance^2;
     
