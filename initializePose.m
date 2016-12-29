@@ -52,6 +52,7 @@ for i = 1:num_it_ransac
     if nnz(is_inlier) > max_num_inliers && nnz(is_inlier) >= 8
         max_num_inliers = nnz(is_inlier);
         inlier_mask = is_inlier;
+        bestF=F;
     end
     max_num_inliers_history(i) = max_num_inliers;
 end
@@ -64,13 +65,16 @@ else
     %compute essential matrix from all inliers and recover R,T
     E = estimateEssentialMatrix(p_0(:,inlier_mask), p_1(:,inlier_mask),K,K);
     [R,u] = decomposeEssentialMatrix(E);
-    [R,T] = disambiguateRelativePose(R, u, p_0, p_1, K, K);
+    [R,T] = disambiguateRelativePose(R, u, p_0(:,inlier_mask), p_1(:,inlier_mask), K, K);
+    pose = [R, T]
 end
+state = struct;
+state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),eye(3,4),pose);
 
 %% Debug statements
 disp('found R and T with num inliers: ');
 max_num_inliers
-pose = [R, T]
+
 figure
 plot(max_num_inliers_history)
  figure
@@ -83,7 +87,5 @@ y_to = p_1(2,inlier_mask);
 plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
 
 
-
-state = 0;
 end
 

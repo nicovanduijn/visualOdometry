@@ -14,33 +14,38 @@
 %   R -  3x3 the correct rotation matrix
 %   T -  3x1 the correct translation vector
 %
-%   where [R|t] = T_C2_W = T_C2_C1 is a transformation that maps points
-%   from the world coordinate system (identical to the coordinate system of camera 1)
-%   to camera 2.
+%   where [R|t] = T_C1_C0 = T_C1_W is a transformation that maps points
+%   from the world coordinate system (identical to the coordinate system of camera 0)
+%   to camera 1.
 %
 
-function [R,T] = disambiguateRelativePose(Rots,u3,p1,p2,K1,K2)
+function [R,T] = disambiguateRelativePose(Rots,u3,points0_h,points1_h,K0,K1)
 
-M1 = K1 * eye(3,4); % Projection matrix of camera 1
+M0 = K0 * eye(3,4); % Projection matrix of camera 1
 
-num_positive_depths_best = 0;
+total_points_in_front_best = 0;
 for iRot = 1:2
-    Rot_test = Rots(:,:,iRot);
+    R_C1_C0_test = Rots(:,:,iRot);
     
     for iSignT = 1:2
-        T_test = u3 * (-1)^iSignT;
+        T_C1_C0_test = u3 * (-1)^iSignT;
         
-        M2 = K2 * [Rot_test, T_test];
-        P_test = linearTriangulation(p1,p2,M1,M2);
+        M1 = K1 * [R_C1_C0_test, T_C1_C0_test];
+        P_C0 = linearTriangulation(points0_h,points1_h,M0,M1);
         
-        num_positive_depths = sum(P_test(3,:) > 0);
+        % project in both cameras
+        P_C1 = [R_C1_C0_test T_C1_C0_test] * P_C0;
+        
+        num_points_in_front0 = sum(P_C0(3,:) > 0);
+        num_points_in_front1 = sum(P_C1(3,:) > 0);
+        total_points_in_front = num_points_in_front0 + num_points_in_front1;
               
-        if (num_positive_depths > num_positive_depths_best)
+        if (total_points_in_front > total_points_in_front_best)
             % Keep the rotation that gives the highest number of points
             % in front of both cameras
-            R = Rot_test;
-            T = T_test;
-            num_positive_depths_best = num_positive_depths;
+            R = R_C1_C0_test;
+            T = T_C1_C0_test;
+            total_points_in_front_best = total_points_in_front;
         end
     end
 end

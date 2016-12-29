@@ -44,7 +44,7 @@ end
 %% Bootstrap
 % need to set bootstrap_frames
 if ds == 0
-    bootstrap_frames = [0,3];
+    bootstrap_frames = [1,3];
     img0 = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',bootstrap_frames(1))]);
     img1 = imread([kitti_path '/00/image_0/' ...

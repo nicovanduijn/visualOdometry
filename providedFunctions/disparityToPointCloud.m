@@ -25,7 +25,7 @@ bv_right = K^-1 * px_right;
 points = zeros(size(px_left));
 
 b = [baseline; 0; 0];
-for i = 1:length(px_left)
+for i = 1:size(px_left, 2)
     A = [bv_left(:, i) -bv_right(:, i)];
     x = (A' * A) \ (A' * b);
     points(:, i) = bv_left(:, i) * x(1);

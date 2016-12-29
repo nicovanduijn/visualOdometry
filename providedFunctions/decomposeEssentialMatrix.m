@@ -23,7 +23,15 @@ R(:,:,1) = U*W*V.';
 R(:,:,2) = U*W.'*V.';
 
 if det(R(:,:,1))<0
-    R=-R;
+    R(:,:,1)=-R(:,:,1);
+end
+
+if det(R(:,:,2))<0
+    R(:,:,2)=-R(:,:,2);
+end
+
+if norm(u3) ~= 0
+    u3 = u3/norm(u3);
 end
 
 return
