@@ -74,15 +74,18 @@ end
 if(use_init)
     [state, pose] = initializePose(img0, img1, K);
 else
+    % hard-coded initialization with ground truth
+    bootstrap_frames = [1, 1]; % so we start VO with frame 2
+    prev_img = img0;
      state = struct;
-      state.landmarks = load('p_W_landmarks.txt');
-        state.keypoints = load('keypoints.txt');
-        temp = load([kitti_path '/poses/00.txt']);
-        temp = poseVectorToTransformationMatrix(temp(2,:));
-        state.pose = reshape(temp(1:3,1:4),3,4);
-        state.candidate_keypoints = [];
-        state.candidate_keypoints_1=[];
-        state.candidate_pose_1=[];
+     state.landmarks = load('p_W_landmarks.txt');
+     state.keypoints = load('keypoints.txt');
+     temp = load([kitti_path '/poses/00.txt']);
+     temp = poseVectorToTransformationMatrix(temp(2,:));
+     state.pose = reshape(temp(1:3,1:4),3,4);
+     state.candidate_keypoints = [];
+     state.candidate_keypoints_1=[];
+     state.candidate_pose_1=[];
 end
 
 %% Continuous operation
@@ -102,7 +105,7 @@ for i = range
         assert(false);
     end
     % do all the fancy stuff
-    [state, pose] = processFrame(state, prev_img, image);
+    [state] = processFrame(state, prev_img, image);
     
     % plot that shit
         
