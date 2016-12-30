@@ -1,0 +1,18 @@
+function [ dist ] = epipolarDistance( F, p1, p2 )
+%EPIPOLARDISTANCE Derived this using syms
+%   should be very fast and correct, but only works on single point
+
+
+NumPoints = size(p1,2);
+
+%% Official Solution
+homog_points = [p1, p2];
+epi_lines = [F.'*p2, F*p1];
+denom = epi_lines(1,:).^2 + epi_lines(2,:).^2;
+% cost = sqrt( sum( (sum(epi_lines.*homog_points,1).^2)./denom ) / NumPoints );
+% added hack
+costs =  ((sum(epi_lines.*homog_points,1).^2)./denom );
+cost = sqrt(costs(1:NumPoints)+costs(NumPoints+1:end));
+
+end
+

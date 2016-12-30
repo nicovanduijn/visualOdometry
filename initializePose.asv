@@ -34,7 +34,7 @@ p_1 = homogenize(keypoints_1(:,i_1));
 max_num_inliers = 0; % start with zero inliers
 
 
-%% Apply RANSAC
+%% Apply ransac
 for i = 1:num_it_ransac
     
     % randomly pick 8 keypoints
@@ -59,19 +59,17 @@ for i = 1:num_it_ransac
     max_num_inliers_history(i) = max_num_inliers;
 end
 
-%% Compute essential matrix from all inliers and recover R,T
 if max_num_inliers == 0
-    R = eye(3);
-    T = [0;0;0];
+    R = [];
+    T = [];
     disp('could not initialize [R|T] matrix. Set to zero');
 else
-
+    %compute essential matrix from all inliers and recover R,T
     E = estimateEssentialMatrix(p_0(:,inlier_mask), p_1(:,inlier_mask),K,K);
     [R,u] = decomposeEssentialMatrix(E);
     [R,T] = disambiguateRelativePose(R, u, p_0(:,inlier_mask), p_1(:,inlier_mask), K, K);
-end
 
-%% Initialize state
+end
 state = struct;
 state.pose = [R, T];
 state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),eye(3,4),state.pose);

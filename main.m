@@ -12,6 +12,10 @@ malaga_path = 'data/malaga';
 addpath('providedFunctions'); % add provided functions from exercise sessions
 use_init = false;
 
+%% Nico-only section
+use_init = true;
+addpath('nicosFunctions');
+
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -72,7 +76,7 @@ end
 
 %% initialize with bootstrap
 if(use_init)
-    [state, pose] = initializePose(img0, img1, K);
+    [state] = initializePose(img0, img1, K);
 else
     % hard-coded initialization with ground truth
     bootstrap_frames = [1, 1]; % so we start VO with frame 2
