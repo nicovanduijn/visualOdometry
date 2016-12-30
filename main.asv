@@ -115,7 +115,7 @@ for i = range
     [state] = processFrame(state, prev_img, image);
     
     % plot that shit
-    plot(state.pose(1,4),state.pose(2,4),'rx'); %simple birds-eye view of our path
+    plot(state.pose(1,4),state.pose(2,4)); %simple birds-eye view of our path
     hold on
         
     % Makes sure that plots refresh.    
