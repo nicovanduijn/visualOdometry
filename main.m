@@ -10,11 +10,12 @@ parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
 addpath('providedFunctions'); % add provided functions from exercise sessions
+addpath('approvedFunctions');
 use_init = false;
 
 %% Nico-only section
-% use_init = true;
-% addpath('nicosFunctions');
+%  use_init = true;
+%  addpath('nicosFunctions');
 
 
 if ds == 0
@@ -84,7 +85,9 @@ else
     prev_img = img0;
      state = struct;
      state.landmarks = load('p_W_landmarks.txt');
+     state.landmarks = homogenize(state.landmarks');
      state.keypoints = load('keypoints.txt');
+     state.keypoints = [state.keypoints(:,2)';state.keypoints(:,1)'];
      temp = load([kitti_path '/poses/00.txt']);
      temp = poseVectorToTransformationMatrix(temp(2,:));
      state.pose = reshape(temp(1:3,1:4),3,4);
