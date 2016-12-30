@@ -18,11 +18,16 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %   - current_state: Struct
 %   - current_pose: 4x3 non-homogenous matrix representing pose [R|T]
 
-%% Setup
-%  - Parameters?
+%% Paramters
+
+discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
+candidate_discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
+
+%% Preliminary stuff
 
 discard = previous_state.discard;
 candidate_discard = previous_state.candidate_discard;
+K = previous_state.K;
 
 %% Apply KLT on current_image
 
@@ -38,7 +43,7 @@ candidate_discard = previous_state.candidate_discard;
 
 [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     updated_candidate_keypoints_1,updated_candidate_pose_1,candidate_discard] = triangulation(...
-    previous_state.K,current_pose,previous_state.candidate_pose_1,current_candidate_keypoints,...
+    K,current_pose,previous_state.candidate_pose_1,current_candidate_keypoints,...
     previous_state.candidate_keypoints_1,candidate_discard);
 
 
@@ -52,16 +57,18 @@ candidate_discard = previous_state.candidate_discard;
     current_image,current_keypoints,new_keypoints,updated_candidate_keypoints);
 
 %% What is left to do
-%  - TODO: Kick out old/bad candidate_keypoints (using candidate_discard?)
 
-current_state.landmarks = [current_landmarks new_landmarks]; % TODO: Applly discard on current_landmarks
-current_state.keypoints = [current_keypoints new_keypoints]; % TODO: Apply discard on current_keypoints
-current_state.discard = discard; % TODO Apply discard on itself
-current_state.candidate_keypoints = [updated_candidate_keypoints new_candidate_keypoints];
-current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1 new_candidate_keypoints_1];
-current_state.candidate_pose_1 = [updated_candidate_pose_1 new_candidate_pose_1];
-current_state.candidate_discard = candidate_discard;
-current_state.K = previous_state.K;
+del = discard > discard_max;
+candidate_del = candidate_discard > candidate_discard_max;
+
+current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
+current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
+current_state.discard = discard(:,~del);
+current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
+current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
+current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
+current_state.candidate_discard = candidate_discard(:,~candidate_del);
+current_state.K = K;
 
 end
 
