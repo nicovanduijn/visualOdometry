@@ -1,4 +1,4 @@
-function [state, pose] = initializePose(img_0, img_1, K )
+function [state] = initializePose(img_0, img_1, K )
 %INITIALIZE creates initial state and pose when given first two images of
 %dataset
 %   input two images img0 and img1
@@ -66,10 +66,15 @@ else
     E = estimateEssentialMatrix(p_0(:,inlier_mask), p_1(:,inlier_mask),K,K);
     [R,u] = decomposeEssentialMatrix(E);
     [R,T] = disambiguateRelativePose(R, u, p_0(:,inlier_mask), p_1(:,inlier_mask), K, K);
-    pose = [R, T]
+
 end
 state = struct;
+state.pose = [R, T]
 state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),eye(3,4),pose);
+state.keypoints = p_1(:,inlier_mask);
+state.candidate_keypoints = [];
+state.candidate_keypoints_1=[];
+state.candidate_pose_1=[];
 
 %% Debug statements
 disp('found R and T with num inliers: ');
