@@ -52,7 +52,7 @@ end
 % need to set bootstrap_frames
 if ds == 0
 
-    bootstrap_frames = [1,3];
+    bootstrap_frames = [0,2];
     img0 = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',bootstrap_frames(1))]);
     img1 = imread([kitti_path '/00/image_0/' ...
@@ -81,7 +81,7 @@ if(use_init)
     prev_img = img1;
 else
     % hard-coded initialization with ground truth
-    bootstrap_frames = [1, 1]; % so we start VO with frame 2
+    bootstrap_frames = [0, 0]; % so we start VO with frame 2
     prev_img = img0;
      state = struct;
      state.landmarks = load('p_W_landmarks.txt');
