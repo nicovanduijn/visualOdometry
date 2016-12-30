@@ -13,8 +13,8 @@ addpath('providedFunctions'); % add provided functions from exercise sessions
 use_init = false;
 
 %% Nico-only section
-use_init = true;
-addpath('nicosFunctions');
+% use_init = true;
+% addpath('nicosFunctions');
 
 
 if ds == 0
@@ -77,6 +77,7 @@ end
 %% initialize with bootstrap
 if(use_init)
     [state] = initializePose(img0, img1, K);
+    prev_img = img1;
 else
     % hard-coded initialization with ground truth
     bootstrap_frames = [1, 1]; % so we start VO with frame 2
