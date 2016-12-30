@@ -54,7 +54,7 @@ K = previous_state.K;
 %  - Note: new_candidate_keypoints = new_candidate_keypoints_1!
 
 [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
-    current_image,current_keypoints,new_keypoints,updated_candidate_keypoints);
+    current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,pose);
 
 %% What is left to do
 
@@ -63,11 +63,12 @@ candidate_del = candidate_discard > candidate_discard_max;
 
 current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
 current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
-current_state.discard = discard(:,~del);
+current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];
 current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
 current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
 current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
-current_state.candidate_discard = candidate_discard(:,~candidate_del);
+current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
+current_state.pose = current_pose;
 current_state.K = K;
 
 end
