@@ -7,7 +7,8 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %       * candidate_keypoints: 2xM
 %       * candidate_keypoints_1: 2xM
 %       * candidate_pose_1: 12xM
-%       * pose: 12x1
+%       * pose: 3x4
+%       * K: 3x3
 %       * discard 1xN
 %       * candidate_discard 1xM
 %   - previous_image: XxY
@@ -37,7 +38,7 @@ candidate_discard = previous_state.candidate_discard;
 
 [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     updated_candidate_keypoints_1,updated_candidate_pose_1,candidate_discard] = triangulation(...
-    current_pose,previous_state.candidate_pose_1,current_candidate_keypoints,...
+    previous_state.K,current_pose,previous_state.candidate_pose_1,current_candidate_keypoints,...
     previous_state.candidate_keypoints_1,candidate_discard);
 
 
@@ -51,7 +52,7 @@ candidate_discard = previous_state.candidate_discard;
     current_image,current_keypoints,new_keypoints,updated_candidate_keypoints);
 
 %% What is left to do
-%  - TODO: Kick out old/bad candidate_keypoints (using candidated_discard?)
+%  - TODO: Kick out old/bad candidate_keypoints (using candidate_discard?)
 
 current_state.landmarks = [current_landmarks new_landmarks]; % TODO: Applly discard on current_landmarks
 current_state.keypoints = [current_keypoints new_keypoints]; % TODO: Apply discard on current_keypoints
@@ -60,6 +61,7 @@ current_state.candidate_keypoints = [updated_candidate_keypoints new_candidate_k
 current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1 new_candidate_keypoints_1];
 current_state.candidate_pose_1 = [updated_candidate_pose_1 new_candidate_pose_1];
 current_state.candidate_discard = candidate_discard;
+current_state.K = previous_state.K;
 
 end
 

@@ -93,6 +93,7 @@ else
     state.candidate_keypoints = [];
     state.candidate_keypoints_1=[];
     state.candidate_pose_1=[];
+    state.K = K;
 end
 
 %% Continuous operation
