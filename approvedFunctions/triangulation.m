@@ -1,6 +1,6 @@
 function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     updated_candidate_keypoints_1,updated_candidate_pose_1,updated_candidate_discard] = triangulation(...
-    current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
+    K,current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
 
 %% Parameters
 min_angle = 10; % Degrees
@@ -12,16 +12,16 @@ penalty = inf; % Penalty for points triangulated behind the camera
 num_points = size(candidate_keypoints,2);
 p1 = [candidate_keypoints_1; ones(1,num_points)];
 p2 = [candidate_keypoints; ones(1,num_points)];
-M2 = current_pose;
+M2 = K*current_pose;
 
 P = zeros(4,num_points);
 
 for j=1:num_points
-    M1 = reshape(candidate_pose_1(:,j),[3,4]);
+    M1 = K*reshape(candidate_pose_1(:,j),[3,4]);
     
     % Build matrix of linear homogeneous system of equations
-    A1 = Cross2Matrix(p1(:,j))*M1;
-    A2 = Cross2Matrix(p2(:,j))*M2;
+    A1 = cross2Matrix(p1(:,j))*M1;
+    A2 = cross2Matrix(p2(:,j))*M2;
     A = [A1; A2];
     
     % Solve the linear homogeneous system of equations
