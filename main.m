@@ -14,8 +14,8 @@ addpath('approvedFunctions');
 use_init = false;
 
 %% Nico-only section
-%  use_init = true;
-  addpath('nicosFunctions');
+use_init = true;
+addpath('nicosFunctions');
 
 
 if ds == 0
@@ -114,14 +114,16 @@ for i = range
     else
         assert(false);
     end
+    
     % do all the fancy stuff
     [state] = processFrame(state, prev_img, image);
     
+    
     % plot that shit
-    plot(state.pose(1,4),state.pose(2,4),'rx'); %simple birds-eye view of our path
+    plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
-        
-    % Makes sure that plots refresh.    
+    
+    % Makes sure that plots refresh.
     pause(0.01);
     
     prev_img = image;

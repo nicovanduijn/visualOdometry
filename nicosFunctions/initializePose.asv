@@ -14,13 +14,13 @@ nonmaximum_supression_radius = 8;
 descriptor_radius = 9;
 match_lambda = 5;
 num_keypoints = 1000;
-num_it_ransac = 200;
-pixel_tolerance = 0.5;
+num_it_ransac = 100;
+pixel_tolerance = 1;
 
 %% find harris corners and descriptors in both images
 harris_0 = harris(img_0, harris_patch_size, harris_kappa);
 keypoints_0 = selectKeypoints( harris_0, num_keypoints, nonmaximum_supression_radius);
-%keypoints_0 = load('keypoints.txt')'; % for ground truth keypoints
+%   keypoints_0 = load('keypoints.txt')'; % for ground truth keypoints
 descriptors_0 = describeKeypoints(img_0, keypoints_0, descriptor_radius);
 harris_1 = harris(img_1, harris_patch_size, harris_kappa);
 keypoints_1 = selectKeypoints( harris_1, num_keypoints, nonmaximum_supression_radius);
@@ -50,8 +50,9 @@ for i = 1:num_it_ransac
     % calculate epipolar line distance
     errors = epipolarDistance(F,p_0,p_1);
     
-    % count inliers
     is_inlier = errors < pixel_tolerance^2;
+    
+    % count inliers
     if nnz(is_inlier) > max_num_inliers && nnz(is_inlier) >= 8
         max_num_inliers = nnz(is_inlier);
         inlier_mask = is_inlier;
@@ -67,6 +68,11 @@ if max_num_inliers == 0
     disp('could not initialize [R|T] matrix. Set to zero');
 else
     E = estimateEssentialMatrix(p_0(:,inlier_mask), p_1(:,inlier_mask),K,K);
+
+% [fmat, inlier_mask] = estimateFundamentalMatrix(p_0(1:2,:)',p_1(1:2,:)',...
+%        'Method', 'RANSAC', 'NumTrials', 2000, 'DistanceThreshold', 1e-4);
+%     
+% E= K'*fmat*K;
     [R,u] = decomposeEssentialMatrix(E);
     [R,T] = disambiguateRelativePose(R, u, p_0(:,inlier_mask), p_1(:,inlier_mask), K, K);
 end
@@ -74,7 +80,7 @@ end
 %% Initialize state
 state = struct;
 state.pose = [R, T];
-state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),K*eye(3,4),K*state.pose);
+state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),eye(3,4),state.pose);
 state.keypoints = p_1(1:2,inlier_mask);
 state.candidate_keypoints = [];
 state.candidate_keypoints_1=[];
@@ -96,7 +102,9 @@ x_from = p_0(1,inlier_mask);
 x_to = p_1(1,inlier_mask);
 y_from = p_0(2,inlier_mask);
 y_to = p_1(2,inlier_mask);
-plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
+plot([y_from; y_to], [x_from; x_to], 'g-', 'Linewidth', 3);
+
+
 
 end
 

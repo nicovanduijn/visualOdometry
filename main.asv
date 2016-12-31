@@ -14,7 +14,7 @@ addpath('approvedFunctions');
 use_init = false;
 
 %% Nico-only section
-%  use_init = true;
+  use_init = true;
   addpath('nicosFunctions');
 
 
@@ -94,12 +94,12 @@ else
     state.candidate_keypoints_1=[];
     state.candidate_pose_1=[];
     state.K = K;
-    state.discard = zeros(1,;
-    state.candidate_discard = [];
+    state.discard = zeros(1,size(state.landmarks,2));
+    state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 end
 
 %% Continuous operation
-range = (bootstrap_frames(2)+1):last_frame;
+range = (bootstrap_frames(2)+1):50;%last_frame;
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
@@ -115,7 +115,9 @@ for i = range
         assert(false);
     end
     % do all the fancy stuff
-    [state] = processFrame(state, prev_img, image);
+%     [state] = processFrame(state, prev_img, image);
+[new_state] = initializePose(prev_img, image, state.K);
+
     
     % plot that shit
     plot(state.pose(1,4),state.pose(2,4),'rx'); %simple birds-eye view of our path
