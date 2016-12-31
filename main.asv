@@ -15,7 +15,7 @@ use_init = false;
 
 %% Nico-only section
 %  use_init = true;
-%  addpath('nicosFunctions');
+  addpath('nicosFunctions');
 
 
 if ds == 0
@@ -93,6 +93,9 @@ else
     state.candidate_keypoints = [];
     state.candidate_keypoints_1=[];
     state.candidate_pose_1=[];
+    state.K = K;
+    state.discard = zeros(1,;
+    state.candidate_discard = [];
 end
 
 %% Continuous operation
@@ -115,7 +118,7 @@ for i = range
     [state] = processFrame(state, prev_img, image);
     
     % plot that shit
-    plot(state.pose(1,4),state.pose(2,4)); %simple birds-eye view of our path
+    plot(state.pose(1,4),state.pose(2,4),'rx'); %simple birds-eye view of our path
     hold on
         
     % Makes sure that plots refresh.    

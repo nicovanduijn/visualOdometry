@@ -31,13 +31,14 @@ K = previous_state.K;
 
 %% Apply KLT on current_image
 
-[current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking(previous_state.keypoints,...
-    previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
+% [current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking(previous_state.keypoints,...
+%     previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
 
 %% Apply P3P + RANSAC on keypoints with an associated landmark
-
-[current_pose,discard] = poseEstimation(previous_image,current_image,...
-    previous_state.keypoints,current_keypoints,discard);
+% to test on zero-frame without keypoint tracker working (correctly gives
+% identity as pose)
+% current_keypoints = previous_state.keypoints;
+[current_pose,discard] = poseEstimation(current_keypoints,previous_state.landmarks, previous_state.K, discard);
 
 %% Apply linear triangulation on keypoints without associated landmark
 

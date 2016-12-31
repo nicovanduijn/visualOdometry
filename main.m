@@ -15,7 +15,7 @@ use_init = false;
 
 %% Nico-only section
 %  use_init = true;
-%  addpath('nicosFunctions');
+  addpath('nicosFunctions');
 
 
 if ds == 0
@@ -94,6 +94,8 @@ else
     state.candidate_keypoints_1=[];
     state.candidate_pose_1=[];
     state.K = K;
+    state.discard = zeros(1,size(state.landmarks,2));
+    state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 end
 
 %% Continuous operation
