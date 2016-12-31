@@ -99,7 +99,7 @@ else
 end
 
 %% Continuous operation
-range = (bootstrap_frames(2)+1):last_frame;
+range = (bootstrap_frames(2)+1):250;%last_frame;
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
@@ -116,12 +116,22 @@ for i = range
     end
     
     % do all the fancy stuff
-    [state] = processFrame(state, prev_img, image);
-    
+%     [state] = processFrame(state, prev_img, image);
+
+
+
+%% TESTING INIT ONLY, REMOVE LATERS
+% to test initialisation, continuously run it on the two most recent frames
+    [new_state] = initializePose(prev_img, image, K);
+    temp = [state.pose; 0 0 0 1]*[new_state.pose; 0 0 0 1];
+    state.pose = temp(1:3,1:4);
+    new_state.pose
+ %% -----------------------
     
     % plot that shit
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
+    axis equal
     
     % Makes sure that plots refresh.
     pause(0.01);

@@ -84,19 +84,19 @@ state.discard = zeros(1,size(state.landmarks,2));
 state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 
 %% Debug statements
-state.pose
-disp('found R and T with num inliers: ');
-max_num_inliers
-figure
-plot(max_num_inliers_history)
-figure
-imshow(img_0);
-hold on
-x_from = p_0(1,inlier_mask);
-x_to = p_1(1,inlier_mask);
-y_from = p_0(2,inlier_mask);
-y_to = p_1(2,inlier_mask);
-plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
+% state.pose
+% disp('found R and T with num inliers: ');
+% max_num_inliers
+% figure
+% plot(max_num_inliers_history)
+% figure
+% imshow(img_0);
+% hold on
+% x_from = p_0(1,inlier_mask);
+% x_to = p_1(1,inlier_mask);
+% y_from = p_0(2,inlier_mask);
+% y_to = p_1(2,inlier_mask);
+% plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
 
 end
 
