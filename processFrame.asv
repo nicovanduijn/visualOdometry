@@ -55,7 +55,6 @@ plot(previous_state.keypoints(1,:),previous_state.keypoints(2,:), 'rx')
 subplot(2,1,2)
 imshow(current_image)
 hold on
-
 plot(current_state.keypoints(1,:),current_state.keypoints(2,:), 'rx')
 
 
@@ -79,8 +78,6 @@ plot(current_state.keypoints(1,:),current_state.keypoints(2,:), 'rx')
     current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,pose);
 
 %% What is left to do
-
-candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
 
 del = discard > discard_max;
 candidate_del = candidate_discard > candidate_discard_max;
