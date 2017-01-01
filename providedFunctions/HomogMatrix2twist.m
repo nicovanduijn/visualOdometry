@@ -1,4 +1,4 @@
-function twist = HomogMatrix2twist(H)
+function twist = homogMatrix2twist(H)
 
 % HomogMatrix2twist Convert 4x4 homogeneous matrix to twist coordinates
 %

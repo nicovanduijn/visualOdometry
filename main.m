@@ -123,7 +123,6 @@ for i = range
 %% TESTING INIT ONLY, REMOVE LATERS
 % to test initialisation, continuously run it on the two most recent frames
     [new_state] = initializePose(prev_img, image, K);
-    new_state.pose(1:3,4)=-new_state.pose(1:3,4);
     temp = [state.pose; 0 0 0 1]*[new_state.pose; 0 0 0 1];
     state.pose = temp(1:3,1:4);
     new_state.pose
