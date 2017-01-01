@@ -90,9 +90,9 @@ else
     temp = load([kitti_path '/poses/00.txt']);
     temp = poseVectorToTransformationMatrix(temp(2,:));
     state.pose = reshape(temp(1:3,1:4),3,4);
-    state.candidate_keypoints = [];
-    state.candidate_keypoints_1=[];
-    state.candidate_pose_1=[];
+    state.candidate_keypoints = zeros(2,0)';
+    state.candidate_keypoints_1= zeros(2,0)';
+    state.candidate_pose_1 = zeros(12,0)';
     state.K = K;
     state.discard = zeros(1,size(state.landmarks,2));
     state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));

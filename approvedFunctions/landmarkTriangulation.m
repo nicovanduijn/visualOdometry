@@ -37,8 +37,13 @@ behind_camera = P(3,:) - current_pose(3,4) < 0;
 % Compute angle and compare with min_angle
 a = P(1:3,:) - repmat(current_pose(1:3,4),1,num_points);
 b = P(1:3,:) - candidate_pose_1(10:12,:);
-angle = acos(dot(a,b)./sqrt(dot(a,a)*dot(b,b))); % acos(dot(a(:,j),b(:,j))/norm(a(:,j))/norm(b(:,j)));
-new = min_angle < abs(angle) && ~behind_camera;
+angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))); % acos(dot(a(:,j),b(:,j))/norm(a(:,j))/norm(b(:,j)));
+
+if isempty(angle)
+    new = []; % Avoid problems if there are no candidate_keypoints
+else
+    new = min_angle < abs(angle) && ~behind_camera;
+end
 
 % Output
 new_keypoints = candidate_keypoints(:,new);
