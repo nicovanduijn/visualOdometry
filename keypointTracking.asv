@@ -20,11 +20,15 @@ function [current_keypoints,current_candidate_keypoints,discard,candidate_discar
 previous_image = double(previous_image)*(1/255);
 r = 20;
 
+
+
+
 for i = 1:length(previous_state_keypoints)
     
-    if previous_state_keypoints(1,i)>(r+1) && previous_state_keypoints(1,i)<size(previous_image,1)-(r+1)...
-            && previous_state_keypoints(2,i)>(r+1) && previous_state_keypoints(2,i)<size(previous_image,2)-(r+1)
+    if previous_state_keypoints(1,i)>r && previous_state_keypoints(1,i)<size(previous_image,1)-r...
+            && previous_state_keypoints(2,i)>r && previous_state_keypoints(2,i)<size(previous_image,2)-r
         
+    
          keypoint_frame{i} =     [previous_state_keypoints(1,i)-r,previous_state_keypoints(1,i)+r;...
                                             previous_state_keypoints(2,i)-r,previous_state_keypoints(2,i)+r];
     else
@@ -52,7 +56,7 @@ for k = 1:numel(keypoint_frame),
     
             w = keypoint_frame{k};
             %     center = [w(1,1)+w(1,2)-1 w(2,1)+w(2,2)-1]/2; % center of the template, in image coordinates.
-            TemplateData(k).p = [0 0 0 0 previous_state_keypoints(1,k) previous_state_keypoints(2,k)];
+            TemplateData(k).p = [0 0 0 0 previous_state_keypoints(1,k+312) previous_state_keypoints(2,k+312)];
             TemplateData(k).image = previous_image(w(1,1):w(1,2), w(2,1):w(2,2)); % pixels of the template
     end
     
@@ -69,7 +73,7 @@ Options.AffineIterations = 5;
 current_image = double(current_image)*(1/255);
 
 for i=1:numel(keypoint_frame),
-    if ~isempty(keypoint_frame{i})
+    if ~isempty(keypoint_frame{k})
         
         [TemplateData(i).p,~,~] = LucasKanadeAffine(current_image,TemplateData(i).p,TemplateData(i).image,Options);
         p = TemplateData(i).p;
@@ -78,8 +82,7 @@ for i=1:numel(keypoint_frame),
         
     else
         
-        current_keypoints(:,i) =[-1,-1];
-    end
+        current_keypoints(:,i) =[];
 end
 
 current_candidate_keypoints = previous_state_candidate_keypoints;

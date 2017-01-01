@@ -118,20 +118,26 @@ for i = range
     set(gcf,'Color','w'); axis on,
     hold on
     
-    plot(state.keypoints(2,313),state.keypoints(1,313),'r*')
+    for i=1:length(state.keypoints)
+       
+        plot(state.keypoints(2,i),state.keypoints(1,i),'r*')
+    end
+       
     
     % do all the fancy stuff
-    [current_state,M,a] = processFrame_Marc(state, prev_img, image);
+    [current_state] = processFrame_Marc(state, prev_img, image);
   
-    M
+   
     
     figure(2)
-    image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',i)]);
+    image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',1)]);
     imshow(image)
     title(['Frame ' num2str(1)])
     set(gcf,'Color','w'); axis on,
     hold on
-    plot(current_state.keypoints(2,1),current_state.keypoints(1,1),'r*')   
+    for i=1:length(state.keypoints)
+        plot(current_state.keypoints(2,i),current_state.keypoints(1,i),'r*')
+    end
     
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5 
         
