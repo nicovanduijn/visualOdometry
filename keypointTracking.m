@@ -74,7 +74,7 @@ for i=1:numel(keypoint_frame),
         [TemplateData(i).p,~,~] = LucasKanadeAffine(current_image,TemplateData(i).p,TemplateData(i).image,Options);
         p = TemplateData(i).p;
         %M = [ 1+p(1) p(3) p(5); p(2) 1+p(4) p(6)];
-        current_keypoints(:,i) = [p(5);p(6)];
+        current_keypoints(:,i) = [p(6);p(5)];
         
     else
         
