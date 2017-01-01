@@ -79,7 +79,7 @@ if(use_init)
     prev_img = img1;
 else
     % hard-coded initialization with ground truth
-    bootstrap_frames = [0, 0]; % so we start VO with frame 1
+    bootstrap_frames = [1, 1]; % so we start VO with frame 2
     prev_img = img0;
      state = struct;
      state.landmarks = load('p_W_landmarks.txt')';
