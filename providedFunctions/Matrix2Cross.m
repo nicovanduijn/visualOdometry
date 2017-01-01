@@ -11,7 +11,7 @@
 %
 % See also CROSS2MATRIX
 
-function x = Matrix2Cross(M)
+function x = matrix2Cross(M)
 
 x = [-M(2,3); M(1,3); -M(1,2)];
 

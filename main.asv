@@ -2,19 +2,20 @@
 clear all % clean up
 clc
 close all
-  %rng(1);
+%rng(1);
 
 % set the dataset to use
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking 
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
 addpath('providedFunctions'); % add provided functions from exercise sessions
+addpath('approvedFunctions');
 use_init = false;
 
 %% Nico-only section
-% use_init = true;
-% addpath('nicosFunctions');
+use_init = true;
+addpath('nicosFunctions');
 
 
 if ds == 0
@@ -81,20 +82,21 @@ else
     % hard-coded initialization with ground truth
     bootstrap_frames = [0, 0]; % so we start VO with frame 1
     prev_img = img0;
-     state = struct;
-     state.landmarks = load('p_W_landmarks.txt')';
-     state.keypoints = load('keypoints.txt')';
-     temp = load([kitti_path '/poses/00.txt']);
-     temp = poseVectorToTransformationMatrix(temp(2,:));
-     state.pose = reshape(temp(1:3,1:4),3,4);
-     state.candidate_keypoints = [];
-     state.candidate_keypoints_1=[];
-     state.candidate_pose_1=[];
-     state.discard =zeros(1,length(state.keypoints));
-     state.candidate_discard = [];
+    state = struct;
+    state.landmarks = load('p_W_landmarks.txt');
+    state.landmarks = homogenize(state.landmarks');
+    state.keypoints = load('keypoints.txt');
+    state.keypoints = [state.keypoints(:,2)';state.keypoints(:,1)'];
+    temp = load([kitti_path '/poses/00.txt']);
+    temp = poseVectorToTransformationMatrix(temp(2,:));
+    state.pose = reshape(temp(1:3,1:4),3,4);
+    state.candidate_keypoints = [];
+    state.candidate_keypoints_1=[];
+    state.candidate_pose_1=[];
+    state.K = K;
+    state.discard = zeros(1,size(state.landmarks,2));
+    state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 end
-
-
 
 %% Continuous operation
 range = (bootstrap_frames(2)+1):last_frame;
@@ -112,6 +114,7 @@ for i = range
     else
         assert(false);
     end
+<<<<<<< HEAD:Main_testing_KLT.asv
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
     figure(1), imshow(prev_img)
     title(['Frame ' num2str(i-1)])
@@ -127,21 +130,46 @@ for i = range
     [current_state] = processFrame_Marc(state, prev_img, image);
   
    
+=======
     
-    figure(2)
-    image = imread([kitti_path '/00/image_0/' sprintf('%06d.png',i)]);
-    imshow(image)
-    title(['Frame ' num2str(1)])
-    set(gcf,'Color','w'); axis on,
+    % do all the fancy stuff
+%     [state] = processFrame(state, prev_img, image);
+
+
+
+%% TESTING INIT ONLY, REMOVE LATER
+% to test initialisation, continuously run it on the two most recent frames
+    [new_state] = initializePose(prev_img, image, K);
+    temp = [state.pose; 0 0 0 1]*[new_state.pose; 0 0 0 1];
+    state.pose = temp(1:3,1:4);
+    new_state.pose
+ %% -----------------------
+>>>>>>> origin/master:main.asv
+    
+    % plot that shit
+    subplot(2,1,1);
+    imshow(image);
+%     hold on;
+%     plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
+%     hold off;
+    subplot(2,1,2);
+    plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
+<<<<<<< HEAD:Main_testing_KLT.asv
     plot(current_state.keypoints(2,1),current_state.keypoints(1,1),'r*') 
     plot(current_state.keypoints(2,2),current_state.keypoints(1,2),'r*')
     plot(current_state.keypoints(2,3),current_state.keypoints(1,3),'r*')
+=======
+    plot(ground_truth(i,1),ground_truth(i,2),'bx');
+%     plot(state.landmarks(1,:),state.landmarks(3,:),'g.');
+    legend('estimated path', 'ground truth','landmarks');
+    axis equal
+     state
+>>>>>>> origin/master:main.asv
     
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5 
-        
-    % Makes sure that plots refresh.    
+    % Makes sure that plots refresh.
     pause(0.01);
     
     prev_img = image;
 end
+plot(ground_truth(:,1),ground_truth(:,2))

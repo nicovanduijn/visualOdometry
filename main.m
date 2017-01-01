@@ -116,22 +116,29 @@ for i = range
     end
     
     % do all the fancy stuff
-%     [state] = processFrame(state, prev_img, image);
+     [state] = processFrame(state, prev_img, image);
 
 
 
-%% TESTING INIT ONLY, REMOVE LATERS
+%% TESTING INIT ONLY, REMOVE LATER
 % to test initialisation, continuously run it on the two most recent frames
-    [new_state] = initializePose(prev_img, image, K);
-    new_state.pose(1:3,4)=-new_state.pose(1:3,4);
-    temp = [state.pose; 0 0 0 1]*[new_state.pose; 0 0 0 1];
-    state.pose = temp(1:3,1:4);
-    new_state.pose
+%     [new_state] = initializePose(prev_img, image, K);
+%     temp = [state.pose; 0 0 0 1]*[new_state.pose; 0 0 0 1];
+%     state.pose = temp(1:3,1:4);
  %% -----------------------
     
     % plot that shit
+    subplot(2,1,1);
+    imshow(image);
+    hold on;
+    plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
+    hold off;
+    subplot(2,1,2);
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
+    plot(ground_truth(i,1),ground_truth(i,2),'bx');
+%   plot(new_state.landmarks(1,:),new_state.landmarks(3,:),'g.');
+    legend('estimated path', 'ground truth');
     axis equal
     
     % Makes sure that plots refresh.
@@ -139,4 +146,3 @@ for i = range
     
     prev_img = image;
 end
-plot(ground_truth(:,1),ground_truth(:,2))
