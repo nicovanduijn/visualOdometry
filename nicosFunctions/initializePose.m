@@ -20,7 +20,6 @@ pixel_tolerance = 1;
 %% find harris corners and descriptors in both images
 harris_0 = harris(img_0, harris_patch_size, harris_kappa);
 keypoints_0 = selectKeypoints( harris_0, num_keypoints, nonmaximum_supression_radius);
-%keypoints_0 = load('keypoints.txt')'; % for ground truth keypoints
 descriptors_0 = describeKeypoints(img_0, keypoints_0, descriptor_radius);
 harris_1 = harris(img_1, harris_patch_size, harris_kappa);
 keypoints_1 = selectKeypoints( harris_1, num_keypoints, nonmaximum_supression_radius);
@@ -74,7 +73,7 @@ end
 %% Initialize state
 state = struct;
 state.pose = [R', -R*T];
-state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),K*eye(3,4),K*state.pose);
+state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),K*eye(3,4),K*[R,T]);
 state.keypoints = p_1(1:2,inlier_mask);
 state.candidate_keypoints = [];
 state.candidate_keypoints_1=[];
