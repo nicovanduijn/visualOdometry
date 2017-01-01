@@ -59,6 +59,8 @@ K = previous_state.K;
 
 %% What is left to do
 
+candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
+
 del = discard > discard_max;
 candidate_del = candidate_discard > candidate_discard_max;
 
