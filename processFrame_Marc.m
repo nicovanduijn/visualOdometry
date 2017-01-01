@@ -25,7 +25,7 @@ candidate_discard = previous_state.candidate_discard;
 
 %% Apply KLT on current_image
 
-[current_keypoints,current_candidate_keypoints,discard,candidate_discard,M,a] = keypointTracking(previous_state.keypoints,...
+[current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking(previous_state.keypoints,...
     previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
 
 
@@ -33,7 +33,6 @@ current_state.keypoints = current_keypoints;
 current_state.candidate_keypoints = current_candidate_keypoints;
 current_state.discard = discard;
 current_state.candidate_discard = candidate_discard;
-M = M;
-a = a;
+
 end
 
