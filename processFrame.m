@@ -55,7 +55,6 @@ plot(previous_state.keypoints(1,:),previous_state.keypoints(2,:), 'rx')
 subplot(2,1,2)
 imshow(current_image)
 hold on
-
 plot(current_state.keypoints(1,:),current_state.keypoints(2,:), 'rx')
 
 

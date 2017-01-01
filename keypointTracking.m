@@ -16,7 +16,7 @@ function [current_keypoints,current_candidate_keypoints,discard,candidate_discar
 
 
 %% Set templates around keypoints and pad templates with extra boundary pixels
-
+previous_state_keypoints = flipud(previous_state_keypoints);
 previous_image = double(previous_image)*(1/255);
 r = 20;
 

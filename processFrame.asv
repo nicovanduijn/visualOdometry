@@ -79,6 +79,8 @@ plot(current_state.keypoints(1,:),current_state.keypoints(2,:), 'rx')
 
 %% What is left to do
 
+candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
+
 del = discard > discard_max;
 candidate_del = candidate_discard > candidate_discard_max;
 
