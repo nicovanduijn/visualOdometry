@@ -15,7 +15,7 @@ descriptor_radius = 9;
 match_lambda = 5;
 num_keypoints = 1000;
 num_it_ransac = 200;
-pixel_tolerance = 0.5;
+pixel_tolerance = 1;
 
 %% find harris corners and descriptors in both images
 harris_0 = harris(img_0, harris_patch_size, harris_kappa);
