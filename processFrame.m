@@ -34,12 +34,6 @@ K = previous_state.K;
 [current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking_Matlab(previous_state.keypoints,...
     previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
 
-
-current_state.keypoints = current_keypoints;
-current_state.candidate_keypoints = current_candidate_keypoints;
-current_state.discard = discard;
-current_state.candidate_discard = candidate_discard;
-
 %% Apply P3P + RANSAC on keypoints with an associated landmark
 % to test on zero-frame without keypoint tracker working (correctly gives
 % identity as pose)

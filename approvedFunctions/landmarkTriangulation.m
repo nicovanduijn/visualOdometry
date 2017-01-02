@@ -51,6 +51,8 @@ new_landmarks = P(:,new);
 updated_candidate_keypoints = candidate_keypoints(:,~new);
 updated_candidate_keypoints_1 = candidate_keypoints_1(:,~new);
 updated_candidate_pose_1 = candidate_pose_1(:,~new);
-updated_candidate_discard = candidate_discard(:,~new) + penalty*behind_camera(:,~new);
+%updated_candidate_discard = candidate_discard(:,~new); + penalty*behind_camera(:,~new);
+updated_candidate_discard = candidate_discard(:,~new);
+updated_candidate_discard(:,behind_camera & ~new) = penalty;
 
 end
