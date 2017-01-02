@@ -74,7 +74,7 @@ plot(current_state.keypoints(1,:),current_state.keypoints(2,:), 'rx')
 %  - Note: new_candidate_keypoints = new_candidate_keypoints_1!
 
 [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
-    current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,current_pose);
+    current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,current_pose,discard,candidate_discard);
 
 %% What is left to do
 

@@ -1,5 +1,5 @@
 function [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
-    current_image,current_keypoints,new_keypoints,candidate_keypoints,current_pose)
+    current_image,current_keypoints,new_keypoints,candidate_keypoints,current_pose,discard,candidate_discard)
 
 %% Parameters
 harris_patch_size = 9;
@@ -13,7 +13,7 @@ min_distance = 8; % Minimum distance new keypoints must have w.r.t. existing one
 harris_scores = harris(current_image, harris_patch_size, harris_kappa);
 harris_keypoints = selectKeypoints(harris_scores, num_keypoints, nonmaximum_supression_radius);
 
-existing_keypoints = [current_keypoints new_keypoints candidate_keypoints];
+existing_keypoints = [current_keypoints(:,~(discard == inf)) new_keypoints candidate_keypoints(:,~(candidate_discard == inf))];
 
 distances = pdist2(harris_keypoints',existing_keypoints');
 
