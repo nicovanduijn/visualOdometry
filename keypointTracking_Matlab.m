@@ -46,13 +46,15 @@ if ~isempty(previous_state_candidate_keypoints),
 
     [new_candidate_points,candidate_point_validity] = step(pointTracker,current_image);
     candidate_discard(~point_validity) = inf;
-%     current_candidate_keypoints = new_candidate_points.*candidate_point_validity;
+%      current_candidate_keypoints = new_candidate_points.*candidate_point_validity;
+    current_candidate_keypoints = (new_candidate_points)';
 else
     current_candidate_keypoints = previous_state_candidate_keypoints;
     
 end
 
 current_keypoints = (new_points)';
+
 
 discard = discard;
 candidate_discard = candidate_discard;
