@@ -32,7 +32,8 @@ end
 P = P./repmat(P(4,:),4,1); % Dehomogeneize (P is expressed in homogeneous coordinates)
 
 % Check for points triangulated behind the camera
-behind_camera = P(3,:) - current_pose(3,4) < 0;
+%behind_camera = P(3,:) - current_pose(3,4) < 0;
+behind_camera = current_pose(3,:)*P < 0;
 
 % Compute angle and compare with min_angle
 a = P(1:3,:) - repmat(current_pose(1:3,4),1,num_points);
