@@ -46,17 +46,16 @@ current_state.candidate_discard = candidate_discard;
 %% Apply P3P + RANSAC on keypoints with an associated landmark
 % to test on zero-frame without keypoint tracker working (correctly gives
 % identity as pose)
-<<<<<<< HEAD
-
-figure
-subplot(2,1,1)
-imshow(previous_image)
-hold on
-plot(previous_state.keypoints(1,:),previous_state.keypoints(2,:), 'rx')
-subplot(2,1,2)
-imshow(current_image)
-hold on
-plot(current_state.keypoints(1,:),current_state.keypoints(2,:), 'rx')
+% 
+% figure
+% subplot(2,1,1)
+% imshow(previous_image)
+% hold on
+% plot(previous_state.keypoints(1,:),previous_state.keypoints(2,:), 'rx')
+% subplot(2,1,2)
+% imshow(current_image)
+% hold on
+% plot(current_state.keypoints(1,:),current_state.keypoints(2,:), 'rx')
 
 
 [current_pose,discard] = poseEstimation(current_keypoints, previous_state.landmarks, previous_state.K, discard);
