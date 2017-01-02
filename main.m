@@ -126,19 +126,21 @@ for i = range
 %     temp = [state.pose; 0 0 0 1]*[new_state.pose; 0 0 0 1];
 %     state.pose = temp(1:3,1:4);
  %% -----------------------
-    
+
     % plot that shit
-    subplot(2,1,1);
+    subplot(3,1,1);
     imshow(image);
     hold on;
     plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
     hold off;
-    subplot(2,1,2);
+    subplot(3,1,2);
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
     plot(ground_truth(i,1),ground_truth(i,2),'bx');
     legend('estimated path', 'ground truth');
     axis equal
+    subplot(3,1,3)
+    plot(state.landmarks(1,:),state.landmarks(3,:), 'gx')
     
     % Makes sure that plots refresh.
     pause(0.01);

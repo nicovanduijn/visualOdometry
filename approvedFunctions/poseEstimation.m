@@ -80,7 +80,7 @@ else
 end
 
 pose = [R_C_W', -R_C_W*t_C_W];
-discard(~inlier_mask)=discard(~inlier_mask)+1;
+discard(~inlier_mask)=discard(~inlier_mask)+inf;
 
 end
 

@@ -10,14 +10,22 @@ penalty = inf; % Penalty for points triangulated behind the camera
 %% Code
 
 num_points = size(candidate_keypoints,2);
+
 p1 = [candidate_keypoints_1; ones(1,num_points)];
 p2 = [candidate_keypoints; ones(1,num_points)];
+%TEST p1 = [flipud(candidate_keypoints_1); ones(1,num_points)];
+%TEST p2 = [flipud(candidate_keypoints); ones(1,num_points)];
+
 M2 = K*current_pose;
+%TEST M2 = K*[current_pose(:,1:3)' -current_pose(:,1:3)'*current_pose(:,4)];
 
 P = zeros(4,num_points);
+behind_camera = false(1,num_points);
 
 for j=1:num_points
-    M1 = K*reshape(candidate_pose_1(:,j),[3,4]);
+    pose_1 = reshape(candidate_pose_1(:,j),[3,4]);
+    M1 = K*pose_1;
+    %TEST M1 = K*[pose_1(:,1:3)' -pose_1(:,1:3)'*pose_1(:,4)];
     
     % Build matrix of linear homogeneous system of equations
     A1 = cross2Matrix(p1(:,j))*M1;
@@ -26,25 +34,23 @@ for j=1:num_points
     
     % Solve the linear homogeneous system of equations
     [~,~,v] = svd(A,0);
-    P(:,j) = v(:,4);
+    P(:,j) = v(:,4)/v(4,4); % Extract and dehomogeneize (P is expressed in homogeneous coordinates)
+    
+    % Check for points triangulated behind the camera
+    behind_camera(1,j) = current_pose(3,:)*P(:,j) < 0 | pose_1(3,:)*P(:,j) < 0;
 end
 
-P = P./repmat(P(4,:),4,1); % Dehomogeneize (P is expressed in homogeneous coordinates)
-
-% Check for points triangulated behind the camera
-%behind_camera = P(3,:) - current_pose(3,4) < 0;
-behind_camera = current_pose(3,:)*P < 0;
+%TEST behind_camera = false(1,num_points);
+%TEST for i=1:num_points
+%TEST     pose_1 = reshape(candidate_pose_1(:,i),[3,4]);
+%TEST     behind_camera(1,i) = [0 0 1]*[current_pose(:,1:3)' -current_pose(:,1:3)'*current_pose(:,4)]*P(:,i) < 0 | [0 0 1]*[pose_1(:,1:3)' -pose_1(:,1:3)'*pose_1(:,4)]*P(:,i) < 0;
+%TEST end
 
 % Compute angle and compare with min_angle
 a = P(1:3,:) - repmat(current_pose(1:3,4),1,num_points);
 b = P(1:3,:) - candidate_pose_1(10:12,:);
-angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))); % acos(dot(a(:,j),b(:,j))/norm(a(:,j))/norm(b(:,j)));
-
-if isempty(angle)
-    new = []; % Avoid problems if there are no candidate_keypoints
-else
-    new = (min_angle < abs(angle)*180/pi) & ~behind_camera & ~isinf(candidate_discard);
-end
+angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b)));
+new = (min_angle < abs(angle)*180/pi) & ~behind_camera & ~isinf(candidate_discard);
 
 % Output
 new_keypoints = candidate_keypoints(:,new);
