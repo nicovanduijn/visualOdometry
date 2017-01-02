@@ -11,7 +11,7 @@ min_distance = 8; % Minimum distance new keypoints must have w.r.t. existing one
 %% Code
 
 harris_scores = harris(current_image, harris_patch_size, harris_kappa);
-harris_keypoints = selectKeypoints(harris_scores, num_keypoints, nonmaximum_supression_radius);
+harris_keypoints = flipud(selectKeypoints(harris_scores, num_keypoints, nonmaximum_supression_radius));
 
 existing_keypoints = [current_keypoints(:,~(discard == inf)) new_keypoints candidate_keypoints(:,~(candidate_discard == inf))];
 

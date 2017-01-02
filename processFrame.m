@@ -20,8 +20,8 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 
 %% Paramters
 
-discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
-candidate_discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
+discard_max = 30; % Points with a higher vote are discarded (currently: random choice)
+candidate_discard_max = 30; % Points with a higher vote are discarded (currently: random choice)
 
 %% Preliminary stuff
 
@@ -57,6 +57,13 @@ K = previous_state.K;
     current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,current_pose,discard,candidate_discard);
 
 %% What is left to do
+
+disp(['Number of new keypoints: ' num2str(size(new_keypoints,2))])
+disp(['Number of keypoints: ' num2str(size(current_keypoints,2))])
+disp(['Any NaN values in candidate_discard: ' num2str(any(isnan(candidate_discard)))])
+disp(['Any NaN values in discard: ' num2str(any(isnan(discard)))])
+disp('Current pose: ')
+disp(num2str(current_pose))
 
 candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
 
