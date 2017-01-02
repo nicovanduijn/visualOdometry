@@ -27,7 +27,7 @@ initialize(pointTracker,points,previous_image);
 [new_points,point_validity] = step(pointTracker,current_image);
 
 new_points = new_points.*point_validity;
-discard = discard.*(point_validity)';
+% discard = discard.*(point_validity)';
 
 % Delete points which are not in the image anymore
 % new_points(new_points<0) = 0;
@@ -35,7 +35,7 @@ discard = discard.*(point_validity)';
 % new_points(new_points(:,2)>height,:) = 0;
 
 new_points(sum((new_points==0),2)>0,:) = [];
-discard = discard + (~point_validity)';
+% discard = discard + (~point_validity)';
 
 %% Candidate keypoints tracking
 if ~isempty(previous_state_candidate_keypoints),

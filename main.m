@@ -128,18 +128,23 @@ for i = range
  %% -----------------------
     
     % plot that shit
-    subplot(2,1,1);
-    imshow(image);
-    hold on;
-    plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
-    hold off;
-    subplot(2,1,2);
-    plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
+    
+    figure(1)
+    imshow(image)
     hold on
-    plot(ground_truth(i,1),ground_truth(i,2),'bx');
-%   plot(new_state.landmarks(1,:),new_state.landmarks(3,:),'g.');
-    legend('estimated path', 'ground truth');
-    axis equal
+    plot(state.keypoints(1,:), state.keypoints(2,:), 'r+')
+%     subplot(2,1,1);
+%     imshow(image);
+%     hold on;
+%     plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
+%     hold off;
+%     subplot(2,1,2);
+%     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
+%     hold on
+%     plot(ground_truth(i,1),ground_truth(i,2),'bx');
+% %   plot(new_state.landmarks(1,:),new_state.landmarks(3,:),'g.');
+%     legend('estimated path', 'ground truth');
+%     axis equal
     
     % Makes sure that plots refresh.
     pause(0.01);
