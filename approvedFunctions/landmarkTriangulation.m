@@ -3,7 +3,7 @@ function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     K,current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
 
 %% Parameters
-min_angle = 1; % Degrees
+min_angle = 10; % Degrees
 
 penalty = inf; % Penalty for points triangulated behind the camera
 
@@ -43,7 +43,7 @@ angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))); % acos(dot(a(:,j),b(:,j))/norm
 if isempty(angle)
     new = []; % Avoid problems if there are no candidate_keypoints
 else
-    new = (min_angle < abs(angle)*180/pi) & ~behind_camera;
+    new = (min_angle < abs(angle)*180/pi) & ~behind_camera & ~isinf(candidate_discard);
 end
 
 % Output

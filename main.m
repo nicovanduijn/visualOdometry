@@ -2,7 +2,7 @@
 clear all % clean up
 clc
 close all
-rng(2);
+rng(1);
 
 % set the dataset to use
 ds = 0; % 0: KITTI, 1: Malaga, 2: parking

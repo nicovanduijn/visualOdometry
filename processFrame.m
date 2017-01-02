@@ -62,8 +62,6 @@ disp(['Number of new keypoints: ' num2str(size(new_keypoints,2))])
 disp(['Number of keypoints: ' num2str(size(current_keypoints,2))])
 disp(['Any NaN values in candidate_discard: ' num2str(any(isnan(candidate_discard)))])
 disp(['Any NaN values in discard: ' num2str(any(isnan(discard)))])
-disp('Current pose: ')
-disp(num2str(current_pose))
 
 candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
 
@@ -79,6 +77,13 @@ current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new
 current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
 current_state.pose = current_pose;
 current_state.K = K;
+
+disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
+disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
+disp('Current pose: ')
+disp(num2str(current_pose))
+% disp('Current pose: ')
+% disp(num2str(current_pose))
 
 end
 
