@@ -38,14 +38,14 @@ initialize(pointTracker,points,previous_image);
 discard(~point_validity) = inf;
 
 %% Candidate keypoints tracking
-if ~isempty(previous_state_candidate_keypoints),
+if ~isempty(previous_state_candidate_keypoints)
     
     candidate_points = (previous_state_candidate_keypoints)';
     pointTracker = vision.PointTracker;
     initialize(pointTracker,candidate_points,previous_image);
 
     [new_candidate_points,candidate_point_validity] = step(pointTracker,current_image);
-    candidate_discard(~point_validity) = inf;
+    candidate_discard(~candidate_point_validity) = inf;
 %      current_candidate_keypoints = new_candidate_points.*candidate_point_validity;
     current_candidate_keypoints = (new_candidate_points)';
 else
