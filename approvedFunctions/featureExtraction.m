@@ -17,7 +17,7 @@ existing_keypoints = [current_keypoints(:,~(discard == inf)) new_keypoints candi
 
 distances = pdist2(harris_keypoints',existing_keypoints');
 
-new_candidate_keypoints = harris_keypoints(:,min(distances) > min_distance);
+new_candidate_keypoints = harris_keypoints(:,min(distances') > min_distance);
 new_candidate_keypoints_1 = new_candidate_keypoints;
 new_candidate_pose_1 = repmat(current_pose(:),1,size(new_candidate_keypoints,2));
 
