@@ -42,7 +42,7 @@ angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))); % acos(dot(a(:,j),b(:,j))/norm
 if isempty(angle)
     new = []; % Avoid problems if there are no candidate_keypoints
 else
-    new = min_angle < abs(angle) && ~behind_camera;
+    new = (min_angle < abs(angle)) & ~behind_camera;
 end
 
 % Output
