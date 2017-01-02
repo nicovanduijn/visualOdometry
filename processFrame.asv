@@ -35,9 +35,12 @@ K = previous_state.K;
     previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
 
 %% Apply P3P + RANSAC on keypoints with an associated landmark
-[pose_difference,discard] = poseEstimation(current_keypoints, previous_state.landmarks, previous_state.K, discard);
-current_pose = previous_state.pose*[pose_difference; 0 0 0 1];
+% to test on zero-frame without keypoint tracker working (correctly gives
+% identity as pose)
 
+[current_pose,discard] = poseEstimation(current_keypoints, previous_state.landmarks, previous_state.K, discard);
+     temp = [previous_state.pose; 0 0 0 1]*[current_pose; 0 0 0 1];
+     current_pose = current_pose(1:3,1:4);
      
 %% Apply linear triangulation on keypoints without associated landmark
 
