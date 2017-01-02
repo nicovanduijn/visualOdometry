@@ -79,7 +79,8 @@ state.candidate_keypoints = zeros(2,0);
 state.candidate_keypoints_1 = zeros(2,0);
 state.candidate_pose_1 = zeros(12,0);
 state.K = K;
-state.discard = zeros(1,size(state.landmarks,2));
+state.discard =zeros(1,size(state.landmarks,2));
+state.discard(state.landmarks(3,:)<0) =inf ; 
 state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 
 %% Debug statements
