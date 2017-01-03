@@ -81,12 +81,10 @@ current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,s
 current_state.pose = current_pose;
 current_state.K = K;
 
-disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
-disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
-disp('Current pose: ')
-disp(num2str(current_pose))
-% disp('Current pose: ')
-% disp(num2str(current_pose))
+ disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
+ disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
+ disp('Current pose: ')
+ disp(num2str(current_pose))
 
 end
 
