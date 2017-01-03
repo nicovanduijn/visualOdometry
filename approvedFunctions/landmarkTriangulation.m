@@ -5,7 +5,7 @@ function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
 %% Parameters
 min_angle = 1; % Degrees 1
 max_angle = 1.8; % Degrees 1.8
-min_iterations = 2; % 2
+min_iterations = 1; % 2
 
 penalty = inf; % Penalty for points triangulated behind the camera
 
@@ -25,9 +25,10 @@ for j=1:num_points
     pose_1 = reshape(candidate_pose_1(:,j),[3,4]);
     pose_1_inv = [pose_1(:,1:3)' -pose_1(:,1:3)'*pose_1(:,4)];
     
-    M2 = K*current_pose_inv*[pose_1; zeros(1,3) 1];
-    M1 = K*[eye(3) zeros(3,1)];
-    
+%triangulating in frame of camera 1
+     M2 = K*current_pose_inv*[pose_1; zeros(1,3) 1];
+     M1 = K*[eye(3) zeros(3,1)];
+     
     % Build matrix of linear homogeneous system of equations
     A1 = cross2Matrix(p1(:,j))*M1;
     A2 = cross2Matrix(p2(:,j))*M2;
@@ -35,7 +36,7 @@ for j=1:num_points
     
     % Solve the linear homogeneous system of equations
     [~,~,v] = svd(A,0);
-    P(:,j) = [pose_1; zeros(1,3) 1]*v(:,4)/v(4,4); % Extract and dehomogeneize (P is expressed in homogeneous coordinates)
+    P(:,j) = [pose_1; zeros(1,3) 1]*v(:,4)/v(4,4); % Extract and dehomogenize (P is expressed in homogeneous coordinates)
     
     % Check for points triangulated behind the camera
     behind_camera(1,j) = current_pose_inv(3,:)*P(:,j) < 0 | pose_1_inv(3,:)*P(:,j) < 0;
