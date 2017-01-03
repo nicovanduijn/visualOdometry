@@ -74,6 +74,7 @@ current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
 current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
 current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];
 current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
+current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
 current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
 current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
 current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
