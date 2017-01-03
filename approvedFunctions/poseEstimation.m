@@ -89,7 +89,7 @@ else
      t_C_W = best_t;%M_C_W(:, end);
 end
 
-pose = [R_C_W', -R_C_W*t_C_W];
+pose = [R_C_W', -R_C_W'*t_C_W];
 % pose = [R_C_W, t_C_W];
 discard(~inlier_mask)=discard(~inlier_mask)+inf;
 

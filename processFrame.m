@@ -20,9 +20,9 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 
 %% Paramters
 
-discard_max = 30; % Points with a higher vote are discarded (currently: random choice)
-candidate_discard_max = 30; % Points with a higher vote are discarded (currently: random choice)
-min_keypoint_threshold = 20;
+discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
+candidate_discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
+min_keypoint_threshold = 30;
 
 %% Preliminary stuff
 
@@ -47,7 +47,7 @@ disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))
 %% Check if number of keypoints too low
 if(sum(discard==0)<=min_keypoint_threshold)
     current_state = initializePose(previous_image, current_image, K);
-    current_state.pose = previous_state.pose * [current_state.pose; 0 0 0 1];
+    current_state.pose = previous_state.pose* [current_state.pose; 0 0 0 1];
     current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
 else
 

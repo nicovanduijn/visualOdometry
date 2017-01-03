@@ -72,7 +72,7 @@ end
 
 %% Initialize state
 state = struct;
-state.pose = [R', -R*T];
+state.pose = [R', -R'*T];
 state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),K*eye(3,4),K*[R,T]);
 state.keypoints = p_1(1:2,inlier_mask);
 state.candidate_keypoints = zeros(2,0);

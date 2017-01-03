@@ -44,6 +44,7 @@ for j=1:num_points
       
     % Check for points triangulated behind the camera
     behind_camera(1,j) = current_pose_inv(3,:)*P(:,j) < 0 | pose_1_inv(3,:)*P(:,j) < 0;
+%     projection_error = projectPoints(current_pose_inv * P(:,j),K)
 end
 
 % Compute angle and compare with min_angle
@@ -51,6 +52,7 @@ a = P(1:3,:) - repmat(current_pose(1:3,4),1,num_points);
 b = P(1:3,:) - candidate_pose_1(10:12,:);
 angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b)));
 new = (min_angle < abs(angle)*180/pi) & (max_angle > abs(angle)*180/pi) & ~behind_camera & ~isinf(candidate_discard) & candidate_discard > min_iterations;
+
 
 disp('New landmarks with associated angle (last row): ')
 disp(num2str([P(:,new); 180/pi*angle(:,new)]))
