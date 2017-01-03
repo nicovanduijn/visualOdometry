@@ -3,9 +3,9 @@ function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     K,current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
 
 %% Parameters
-min_angle = 0.1; % Degrees 1
+min_angle = 1; % Degrees 1
 max_angle = 1.8; % Degrees 1.8
-min_iterations = 0; % 2
+min_iterations = 2; % 2
 
 penalty = inf; % Penalty for points triangulated behind the camera
 
@@ -25,7 +25,7 @@ for j=1:num_points
     pose_1 = reshape(candidate_pose_1(:,j),[3,4]);
     pose_1_inv = [pose_1(:,1:3)' -pose_1(:,1:3)'*pose_1(:,4)];
     
-    M2 = K*[eye(3) zeros(3,1)]*[current_pose_inv; zeros(1,3) 1]*[pose_1; zeros(1,3) 1];
+    M2 = K*current_pose_inv*[pose_1; zeros(1,3) 1];
     M1 = K*[eye(3) zeros(3,1)];
     
     % Build matrix of linear homogeneous system of equations
