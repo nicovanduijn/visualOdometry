@@ -16,18 +16,21 @@ num_points = size(candidate_keypoints,2);
 p1 = [candidate_keypoints_1; ones(1,num_points)];
 p2 = [candidate_keypoints; ones(1,num_points)];
 
-current_pose_inv = [current_pose(:,1:3)' -current_pose(:,1:3)'*current_pose(:,4)];
+ current_pose_inv = invertPose(current_pose);%[current_pose(:,1:3)' -current_pose(:,1:3)'*current_pose(:,4)];
 
 P = zeros(4,num_points);
 behind_camera = false(1,num_points);
 
 for j=1:num_points
     pose_1 = reshape(candidate_pose_1(:,j),[3,4]);
-    pose_1_inv = [pose_1(:,1:3)' -pose_1(:,1:3)'*pose_1(:,4)];
+    pose_1_inv = invertPose(pose_1);%[pose_1(:,1:3)' -pose_1(:,1:3)'*pose_1(:,4)];
     
 %triangulating in frame of camera 1
-     M2 = K*current_pose_inv*[pose_1; zeros(1,3) 1];
-     M1 = K*[eye(3) zeros(3,1)];
+  %   M2 = K*current_pose_inv*[pose_1; zeros(1,3) 1];
+  %   M1 = K*[eye(3) zeros(3,1)];
+  
+  M1 = K*pose_1_inv;
+  M2 = K*current_pose_inv;
      
     % Build matrix of linear homogeneous system of equations
     A1 = cross2Matrix(p1(:,j))*M1;
@@ -36,8 +39,9 @@ for j=1:num_points
     
     % Solve the linear homogeneous system of equations
     [~,~,v] = svd(A,0);
-    P(:,j) = [pose_1; zeros(1,3) 1]*v(:,4)/v(4,4); % Extract and dehomogenize (P is expressed in homogeneous coordinates)
-    
+  %  P(:,j) = [pose_1; zeros(1,3) 1]*v(:,4)/v(4,4); % Extract and dehomogenize (P is expressed in homogeneous coordinates)
+  P(:,j) = v(:,4)/v(4,4); % Extract and dehomogenize (P is expressed in homogeneous coordinates)
+      
     % Check for points triangulated behind the camera
     behind_camera(1,j) = current_pose_inv(3,:)*P(:,j) < 0 | pose_1_inv(3,:)*P(:,j) < 0;
 end
