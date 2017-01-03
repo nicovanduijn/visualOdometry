@@ -67,11 +67,9 @@ for i = 1:num_iterations
         max_num_inliers = nnz(is_inlier);
         inlier_mask = is_inlier;
         if(alt)
-            best_R = R_C_W_guess(:,:,2);
-            best_t = t_C_W_guess(:,:,2);
+            
         else
-            best_R = R_C_W_guess(:,:,1);
-            best_t = t_C_W_guess(:,:,1);
+            
         end
     end
     

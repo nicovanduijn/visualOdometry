@@ -131,6 +131,17 @@ for i = range
     imshow(image);
     hold on;
     plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
+    hold on;
+    num_old_keypoints = size(state.previous_keypoints,2);
+    plot(state.keypoints(1,num_old_keypoints+1:end), state.keypoints(2,num_old_keypoints+1:end), 'bx');
+    hold on;
+    x_from = state.previous_keypoints(1,:);
+    x_to = state.keypoints(1,1:num_old_keypoints);
+    y_from = state.previous_keypoints(2,:);
+    y_to = state.keypoints(2,1:num_old_keypoints);
+    plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
+    hold off;
+    
     subplot(3,1,2);
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
@@ -142,21 +153,9 @@ for i = range
     hold on
     plot(state.pose(1,4),state.pose(3,4),'rx')
     axis equal
+    hold off
     
-    num_old_keypoints = size(state.previous_keypoints,2);
     
-    figure(2)
-    imshow(image);
-    hold on;
-    plot(state.keypoints(1,1:num_old_keypoints), state.keypoints(2,1:num_old_keypoints), 'gx');
-    hold on
-    plot(state.keypoints(1,num_old_keypoints+1:end), state.keypoints(2,num_old_keypoints+1:end), 'bx');
-    hold on
-    x_from = state.previous_keypoints(1,:);
-    x_to = state.keypoints(1,1:num_old_keypoints);
-    y_from = state.previous_keypoints(2,:);
-    y_to = state.keypoints(2,1:num_old_keypoints);
-    plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
     
     % Makes sure that plots refresh.
     pause(0.01);
