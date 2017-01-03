@@ -31,12 +31,18 @@ K = previous_state.K;
 
 %% Apply KLT on current_image
 
+disp(['Number of inf values in discard at beginning: ' num2str(sum(discard == inf))])
+
 [current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking_Matlab(previous_state.keypoints,...
     previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
 
+disp(['Number of inf values in discard after KLT: ' num2str(sum(discard == inf))])
+
 %% Apply P3P + RANSAC on keypoints with an associated landmark
 [current_pose,discard] = poseEstimation(current_keypoints, previous_state.landmarks, previous_state.K, discard);
-     
+
+disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))])
+
 %% Apply linear triangulation on keypoints without associated landmark
 
 [new_keypoints,new_landmarks,updated_candidate_keypoints,updated_candidate_keypoints_1,...
@@ -67,6 +73,7 @@ candidate_del = candidate_discard > candidate_discard_max;
 
 current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
 current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
+current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
 current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];
 current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
 current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
