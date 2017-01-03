@@ -1,4 +1,4 @@
-function [current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking_Matlab(previous_state_keypoints,previous_state_candidate_keypoints,previous_image,current_image,discard,candidate_discard)
+function [current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking(previous_state_keypoints,previous_state_candidate_keypoints,previous_image,current_image,discard,candidate_discard)
 %Track the keypoints from the previous frame to the new frame
 %   Inputs:
 %   - previous_state_keypoints:2xN

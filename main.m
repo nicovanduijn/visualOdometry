@@ -114,16 +114,8 @@ for i = range
     
     % do all the fancy stuff
      [state] = processFrame(state, prev_img, image);
-     
-%% TESTING INIT ONLY, REMOVE LATER
-% to test initialisation, continuously run it on the two most recent frames
-%     [new_state] = initializePose(prev_img, image, K);
-%     temp = [state.pose; 0 0 0 1]*[new_state.pose; 0 0 0 1];
-%     state.pose = temp(1:3,1:4);
- %% -----------------------
 
     % plot that shit
-    figure(1)
     subplot(3,1,1);
     imshow(image);
     hold on;

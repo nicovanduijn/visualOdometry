@@ -34,7 +34,7 @@ K = previous_state.K;
 
 % disp(['Number of inf values in discard at beginning: ' num2str(sum(discard == inf))])
 
-[current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking_Matlab(previous_state.keypoints,...
+[current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking(previous_state.keypoints,...
     previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
 
 % disp(['Number of inf values in discard after KLT: ' num2str(sum(discard == inf))])
