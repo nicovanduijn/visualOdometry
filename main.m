@@ -11,11 +11,8 @@ kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
 addpath('providedFunctions'); % add provided functions from exercise sessions
 addpath('approvedFunctions');
-use_init = false;
-
-%% Nico-only section
 use_init = true;
-addpath('nicosFunctions');
+% addpath('nicosFunctions');
 
 
 if ds == 0
@@ -83,9 +80,9 @@ else
     bootstrap_frames = [0, 0]; % so we start VO with frame 1
     prev_img = img0;
     state = struct;
-    state.landmarks = load('p_W_landmarks.txt');
+    state.landmarks = load('/data/kitti/p_W_landmarks.txt');
     state.landmarks = homogenize(state.landmarks');
-    state.keypoints = load('keypoints.txt');
+    state.keypoints = load('/data/kitti/keypoints.txt');
     state.keypoints = [state.keypoints(:,2)';state.keypoints(:,1)'];
     temp = load([kitti_path '/poses/00.txt']);
     temp = poseVectorToTransformationMatrix(temp(2,:));
@@ -147,7 +144,7 @@ for i = range
     subplot(3,1,2);
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
-    plot(ground_truth(i,1),ground_truth(i,2),'bx');
+     plot(ground_truth(i,1),ground_truth(i,2),'bx');
     legend('estimated path', 'ground truth');
     axis equal
     subplot(3,1,3)
