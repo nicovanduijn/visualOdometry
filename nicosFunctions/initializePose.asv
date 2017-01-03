@@ -82,8 +82,8 @@ state.K = K;
 state.discard =zeros(1,size(state.landmarks,2));
 state.discard(state.landmarks(3,:)<0) =inf ; 
 state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
-state.previous_keypoints = zeros(2,0);
-state.new_candidate_keypoints = zeros(2,0);
+state.previous_keypoints = [];
+state.new_candidate_k
 
 %% Debug statements
 % state.pose

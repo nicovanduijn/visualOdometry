@@ -22,6 +22,7 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 
 discard_max = 30; % Points with a higher vote are discarded (currently: random choice)
 candidate_discard_max = 30; % Points with a higher vote are discarded (currently: random choice)
+min_keypoint_threshold = 20;
 
 %% Preliminary stuff
 
@@ -42,6 +43,13 @@ disp(['Number of inf values in discard after KLT: ' num2str(sum(discard == inf))
 [current_pose,discard] = poseEstimation(current_keypoints, previous_state.landmarks, previous_state.K, discard);
 
 disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))])
+
+%% Check if number of keypoints too low
+if(sum(discard==0)<=min_keypoint_threshold)
+    current_state = initializePose(previous_image, current_image, K);
+    current_state.pose = previous_state.pose * [current_state.pose; 0 0 0 1];
+    current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
+else
 
 %% Apply linear triangulation on keypoints without associated landmark
 
@@ -85,6 +93,7 @@ current_state.K = K;
  disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
  disp('Current pose: ')
  disp(num2str(current_pose))
+end
 
 end
 
