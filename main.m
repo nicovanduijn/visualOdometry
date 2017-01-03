@@ -154,6 +154,8 @@ for i = range
     hold on
     plot(state.keypoints(1,num_old_keypoints+1:end), state.keypoints(2,num_old_keypoints+1:end), 'bx');
     hold on
+    plot(state.new_candidate_keypoints(1,:), state.new_candidate_keypoints(2,:), 'rx');
+    hold on
     x_from = state.previous_keypoints(1,:);
     x_to = state.keypoints(1,1:num_old_keypoints);
     y_from = state.previous_keypoints(2,:);
