@@ -32,23 +32,24 @@ K = previous_state.K;
 
 %% Apply KLT on current_image
 
-disp(['Number of inf values in discard at beginning: ' num2str(sum(discard == inf))])
+% disp(['Number of inf values in discard at beginning: ' num2str(sum(discard == inf))])
 
 [current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking_Matlab(previous_state.keypoints,...
     previous_state.candidate_keypoints,previous_image,current_image,discard,candidate_discard);
 
-disp(['Number of inf values in discard after KLT: ' num2str(sum(discard == inf))])
+% disp(['Number of inf values in discard after KLT: ' num2str(sum(discard == inf))])
 
 %% Apply P3P + RANSAC on keypoints with an associated landmark
 [current_pose,discard] = poseEstimation(current_keypoints, previous_state.landmarks, previous_state.K, discard);
 
-disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))])
+% disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))])
 
 %% Check if number of keypoints too low
 if(sum(discard==0)<=min_keypoint_threshold)
     current_state = initializePose(previous_image, current_image, K);
     current_state.pose = previous_state.pose* [current_state.pose; 0 0 0 1];
     current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
+    disp('lost tracking! re-initializing VO pipeline...');
 else
 
 %% Apply linear triangulation on keypoints without associated landmark
@@ -69,8 +70,8 @@ else
 %% What is left to do
 disp(['Number of new keypoints: ' num2str(size(new_keypoints,2))])
 disp(['Number of keypoints: ' num2str(size(current_keypoints,2))])
-disp(['Any NaN values in candidate_discard: ' num2str(any(isnan(candidate_discard)))])
-disp(['Any NaN values in discard: ' num2str(any(isnan(discard)))])
+% disp(['Any NaN values in candidate_discard: ' num2str(any(isnan(candidate_discard)))])
+% disp(['Any NaN values in discard: ' num2str(any(isnan(discard)))])
 
 candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
 
@@ -89,8 +90,8 @@ current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,s
 current_state.pose = current_pose;
 current_state.K = K;
 
- disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
- disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
+%  disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
+%  disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
  disp('Current pose: ')
  disp(num2str(current_pose))
 end

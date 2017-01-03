@@ -54,9 +54,9 @@ angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b)));
 new = (min_angle < abs(angle)*180/pi) & (max_angle > abs(angle)*180/pi) & ~behind_camera & ~isinf(candidate_discard) & candidate_discard > min_iterations;
 
 
-disp('New landmarks with associated angle (last row): ')
-disp(num2str([P(:,new); 180/pi*angle(:,new)]))
-disp(' ')
+% disp('New landmarks with associated angle (last row): ')
+% disp(num2str([P(:,new); 180/pi*angle(:,new)]))
+% disp(' ')
 
 % Output
 new_keypoints = candidate_keypoints(:,new);
