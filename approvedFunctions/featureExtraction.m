@@ -4,7 +4,7 @@ function [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1
 %% Parameters
 harris_patch_size = 9;
 harris_kappa = 0.08;
-num_keypoints = 200;
+num_keypoints = 1000;
 nonmaximum_supression_radius = 8;
 min_distance = 8; % Minimum distance new keypoints must have w.r.t. existing ones
 

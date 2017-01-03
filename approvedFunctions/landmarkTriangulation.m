@@ -3,7 +3,7 @@ function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     K,current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
 
 %% Parameters
-min_angle = 0; % Degrees 1
+min_angle = 0.1; % Degrees 1
 max_angle = 1.8; % Degrees 1.8
 min_iterations = 0; % 2
 
