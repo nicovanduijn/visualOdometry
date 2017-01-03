@@ -33,7 +33,7 @@ initialize(pointTracker,points,previous_image);
 discard(new_points(:,1)<0 | new_points(:,2)<0)  = inf;
 % new_points(new_points(:,1)>width,:) = 0;
 % new_points(new_points(:,2)>height,:) = 0;
-discard(new_points(:,2)>height | new_points(:,1)>width)  = inf;
+discard(new_points(:,1)>height | new_points(:,2)>width)  = inf;
 
 % new_points(sum((new_points==0),2)>0,:) = [];
 discard(~point_validity) = inf;
@@ -47,7 +47,7 @@ if ~isempty(previous_state_candidate_keypoints)
 
     [new_candidate_points,candidate_point_validity] = step(pointTracker,current_image);
     candidate_discard(new_candidate_points(:,1)<0 | new_candidate_points(:,2)<0)  = inf;
-    candidate_discard(new_candidate_points(:,2)>height | new_candidate_points(:,1)>width)  = inf;
+    candidate_discard(new_candidate_points(:,1)>height | new_points(:,2)>width)  = inf;
     candidate_discard(~candidate_point_validity) = inf;
 %      current_candidate_keypoints = new_candidate_points.*candidate_point_validity;
     current_candidate_keypoints = (new_candidate_points)';

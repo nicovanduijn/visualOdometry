@@ -52,15 +52,13 @@ disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))
 
 %% Find new features
 %  - Perform suppression around existing features?
-%  - How about FAST instaed of Harris?
+%  - How about FAST instead of Harris?
 %  - Do this in every iteration or only once in a while?
 %  - Note: new_candidate_keypoints = new_candidate_keypoints_1!
-
 [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
     current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,current_pose,discard,candidate_discard);
 
 %% What is left to do
-
 disp(['Number of new keypoints: ' num2str(size(new_keypoints,2))])
 disp(['Number of keypoints: ' num2str(size(current_keypoints,2))])
 disp(['Any NaN values in candidate_discard: ' num2str(any(isnan(candidate_discard)))])

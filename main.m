@@ -117,9 +117,7 @@ for i = range
     
     % do all the fancy stuff
      [state] = processFrame(state, prev_img, image);
-
-
-
+     
 %% TESTING INIT ONLY, REMOVE LATER
 % to test initialisation, continuously run it on the two most recent frames
 %     [new_state] = initializePose(prev_img, image, K);
