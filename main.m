@@ -141,6 +141,10 @@ for i = range
     axis equal
     subplot(3,1,3)
     plot(state.landmarks(1,:),state.landmarks(3,:), 'gx')
+    hold on
+    plot(state.pose(1,4),state.pose(3,4),'rx')
+    hold off
+    axis equal
     
     % Makes sure that plots refresh.
     pause(0.01);
