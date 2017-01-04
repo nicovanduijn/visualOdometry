@@ -5,7 +5,7 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
@@ -102,6 +102,8 @@ end
 state.landmarkBundleAdjustment_struct = struct();
 
 %% Continuous operation
+
+init_counter = 0;
 range = (bootstrap_frames(2)+1):last_frame;
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
@@ -141,7 +143,11 @@ for i = range
     hold off;
     
     subplot(3,1,2);
-    plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
+    if state.init_counter <= init_counter
+        plot(state.pose(1,4),state.pose(3,4),'mo', 'MarkerSize', 10); %simple birds-eye view of our path
+    else
+        plot(state.pose(1,4),state.pose(3,4),'rx');
+    end
     hold on
     if(ds ~= 1) %no ground truth for malaga dataset
         plot(ground_truth(i,1),ground_truth(i,2),'bx');
@@ -159,4 +165,6 @@ for i = range
     pause(0.01);
     
     prev_img = image;
+    
+    init_counter = state.init_counter;
 end

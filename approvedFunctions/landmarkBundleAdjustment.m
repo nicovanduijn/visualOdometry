@@ -9,21 +9,21 @@ function [adjusted_landmarks,current_landmarkBundleAdjustment_struct] = landmark
 
 min_observations = 5;
 max_observations = 10;
+max_reprojection_error = 1;
 
 %% Code
 
 num_landmarks = size(landmarks,2) - sum(del);
 num_new_landmarks = size(new_landmarks,2);
-num_adjusted_landmarks = size(landmarks,2) - sum(del) + size(new_landmarks,2);
 
 if isempty(fieldnames(previous_landmarkBundleAdjustment_struct))
-    previous_landmarkBundleAdjustment_struct.previous_landmark_poses = NaN(12,num_landmarks + sum(del),max_observations);
-    previous_landmarkBundleAdjustment_struct.previous_keypoints = NaN(2,num_landmarks + sum(del),max_observations);
+    previous_landmarkBundleAdjustment_struct.poses = NaN(12,max_observations);
+    previous_landmarkBundleAdjustment_struct.keypoints = NaN(2,num_landmarks + sum(del),max_observations);
     previous_landmarkBundleAdjustment_struct.counter = zeros(1,num_landmarks + sum(del));
 end
 
-previous_landmark_poses = previous_landmarkBundleAdjustment_struct.previous_landmark_poses(:,~del,:);
-previous_keypoints = previous_landmarkBundleAdjustment_struct.previous_keypoints(:,~del,:);
+previous_landmark_poses = previous_landmarkBundleAdjustment_struct.poses;
+previous_keypoints = previous_landmarkBundleAdjustment_struct.keypoints(:,~del,:);
 counter = previous_landmarkBundleAdjustment_struct.counter(:,~del);
 
 p1 = [current_keypoints(:,~del); ones(1,num_landmarks)];
@@ -39,22 +39,26 @@ P = NaN(4,num_landmarks);
 adjusted = false(1,num_landmarks);
 % angle = zeros(num_landmarks,max_observations);
 for j=1:num_landmarks
-    if counter(j) >= min_observations
+    if counter(j) >= min_observations && reprojectionError(p1(1:2,j),landmarks(:,j),M1) < max_reprojection_error
         A1 = cross2Matrix(p1(:,j))*M1;
         
         A2 = [];
         for i = 1:min(counter(j),max_observations)
-            M2 = K*invertPose(reshape(previous_landmark_poses(:,j,i),[3,4]));
+            M2 = K*invertPose(reshape(previous_landmark_poses(:,i),[3,4]));
             % A2((i-1)*3+1:i*3,:) = cross2Matrix([previous_keypoints(:,j,i); 1])*M2;
             A2_temp = cross2Matrix([previous_keypoints(:,j,i); 1])*M2;
             
-            a = landmarks(1:3,j) - current_pose(1:3,4);
-            b = landmarks(1:3,j) - previous_landmark_poses(10:12,j,i);
-            % angle(j,i) = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
-            angle = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
-            if angle > 1 && angle < 1.8 % Check if angles are good
+            if reprojectionError(previous_keypoints(:,j,i),landmarks(:,j),M2) < max_reprojection_error % Only take points, which reproject close enough
                A2 = [A2; A2_temp]; 
             end
+            
+            % a = landmarks(1:3,j) - current_pose(1:3,4);
+            % b = landmarks(1:3,j) - previous_landmark_poses(10:12,i);
+            % % angle(j,i) = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
+            % angle = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
+            % if angle > 1 && angle < 1.8 % Check if angles are good
+            %    A2 = [A2; A2_temp]; 
+            % end
         end
         
         if ~isempty(A2)
@@ -97,8 +101,8 @@ axis equal
 hold off
 
 % Output
-current_landmarkBundleAdjustment_struct.previous_landmark_poses = cat(3, repmat(current_pose(:),[1,num_adjusted_landmarks,1]), cat(2,previous_landmark_poses(:,:,1:max_observations-1),NaN(12,num_new_landmarks,max_observations-1)));
-current_landmarkBundleAdjustment_struct.previous_keypoints = cat(3, cat(2,current_keypoints(:,~del),new_keypoints), cat(2,previous_keypoints(:,:,1:max_observations-1),NaN(2,num_new_landmarks,max_observations-1)));
+current_landmarkBundleAdjustment_struct.poses = [current_pose(:) previous_landmark_poses(:,1:max_observations-1)];
+current_landmarkBundleAdjustment_struct.keypoints = cat(3, cat(2,current_keypoints(:,~del),new_keypoints), cat(2,previous_keypoints(:,:,1:max_observations-1),NaN(2,num_new_landmarks,max_observations-1)));
 current_landmarkBundleAdjustment_struct.counter = [counter zeros(1,num_new_landmarks)] + 1;
 
 end

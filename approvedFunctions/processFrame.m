@@ -114,7 +114,7 @@ current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new
 current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
 current_state.pose = current_pose;
 current_state.K = K;
-current_state.init_counter = previous_state.init_counter +1;
+current_state.init_counter = previous_state.init_counter + 1;
 
 %  disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
 %  disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
