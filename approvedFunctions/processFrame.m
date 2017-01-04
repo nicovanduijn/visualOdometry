@@ -46,10 +46,24 @@ K = previous_state.K;
 
 %% Check if number of keypoints too low
 if(sum(discard==0)<=min_keypoint_threshold)
+    disp('lost tracking! re-initializing VO pipeline...');
     current_state = initializePose(previous_image, current_image, K);
     current_state.pose = previous_state.pose* [current_state.pose; 0 0 0 1];
     current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
-    disp('lost tracking! re-initializing VO pipeline...');
+    
+    % Look for new candidate_keypoints and keep old candidate_keypoints
+    [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
+        current_image,current_keypoints,zeros(2,0),previous_state.candidate_keypoints,current_state.pose,discard,candidate_discard);
+    
+    candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
+    
+    candidate_del = candidate_discard > candidate_discard_max;
+    
+    current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
+    current_state.candidate_keypoints = [current_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
+    current_state.candidate_keypoints_1 = [previous_state.candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
+    current_state.candidate_pose_1 = [previous_state.candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
+    current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
 else
 
 %% Apply linear triangulation on keypoints without associated landmark
