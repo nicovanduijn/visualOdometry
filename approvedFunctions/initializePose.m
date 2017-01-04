@@ -8,14 +8,15 @@ function [state] = initializePose(img_0, img_1, K )
 
 
 %% Parameters form exercise 3.
-harris_patch_size = 9;
-harris_kappa = 0.08;
-nonmaximum_supression_radius = 8;
-descriptor_radius = 9;
-match_lambda = 5;
-num_keypoints = 1000;
-num_it_ransac = 200;
-pixel_tolerance = 1;
+global params;
+harris_patch_size = params.init_harris_patch_size;
+harris_kappa = params.init_harris_kappa;
+nonmaximum_supression_radius = params.init_nonmaximum_supression_radius;
+descriptor_radius = params.init_descriptor_radius;
+match_lambda = params.init_match_lambda;
+num_keypoints = params.init_num_keypoints;
+num_it_ransac = params.init_num_it_ransac;
+pixel_tolerance = params.init_pixel_tolerance;
 
 %% find harris corners and descriptors in both images
 harris_0 = harris(img_0, harris_patch_size, harris_kappa);
@@ -74,16 +75,19 @@ end
 state = struct;
 state.pose = [R', -R'*T];
 state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),K*eye(3,4),K*[R,T]);
+del =  state.landmarks(3,:)<0; %delete points behind camera
+state.landmarks(:,del) = [];
 state.keypoints = p_1(1:2,inlier_mask);
+state.keypoints(:,del)=[];
 state.candidate_keypoints = zeros(2,0);
 state.candidate_keypoints_1 = zeros(2,0);
 state.candidate_pose_1 = zeros(12,0);
 state.K = K;
 state.discard =zeros(1,size(state.landmarks,2));
-state.discard(state.landmarks(3,:)<0) =inf ; 
 state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 state.previous_keypoints = zeros(2,0);
 state.new_candidate_keypoints = zeros(2,0);
+state.init_counter = 0;
 
 %% Debug statements
 % state.pose

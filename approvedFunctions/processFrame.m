@@ -11,6 +11,7 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %       * K: 3x3
 %       * discard 1xN
 %       * candidate_discard 1xM
+%       * init_counter 1x1
 %   - previous_image: XxY
 %   - current_image: XxY
 %
@@ -19,10 +20,11 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %   - current_pose: 4x3 non-homogenous matrix representing pose [R|T]
 
 %% Paramters
-
-discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
-candidate_discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
-min_keypoint_threshold = 30;
+global params;
+discard_max = params.proc_discard_max; % Points with a higher vote are discarded (currently: random choice)
+candidate_discard_max = params.proc_candidate_discard_max; % Points with a higher vote are discarded (currently: random choice)
+min_keypoint_threshold = params.proc_min_keypoint_threshold;
+re_init_after = params.proc_re_init_after;
 
 %% Preliminary stuff
 
@@ -45,22 +47,21 @@ K = previous_state.K;
 % disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))])
 
 %% Check if number of keypoints too low
-if(sum(discard==0)<=min_keypoint_threshold)
-    disp('lost tracking! re-initializing VO pipeline...');
+if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_init_after)
     current_state = initializePose(previous_image, current_image, K);
     current_state.pose = previous_state.pose* [current_state.pose; 0 0 0 1];
     current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
+    disp('lost tracking! re-initializing VO pipeline...');
     
     current_state.landmarkBundleAdjustment_struct = struct();
     
     % Look for new candidate_keypoints and keep old candidate_keypoints
+
     [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
-        current_image,current_keypoints,zeros(2,0),previous_state.candidate_keypoints,current_state.pose,discard,candidate_discard);
+        current_image,current_state.keypoints,zeros(2,0),previous_state.candidate_keypoints,current_state.pose,current_state.discard,candidate_discard);
     
     candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
-    
     candidate_del = candidate_discard > candidate_discard_max;
-    
     current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
     current_state.candidate_keypoints = [current_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
     current_state.candidate_keypoints_1 = [previous_state.candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
@@ -113,6 +114,7 @@ current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new
 current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
 current_state.pose = current_pose;
 current_state.K = K;
+current_state.init_counter = previous_state.init_counter +1;
 
 %  disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
 %  disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])

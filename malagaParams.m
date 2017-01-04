@@ -1,0 +1,27 @@
+function params = malagaParams()
+params = struct;
+params.init_harris_patch_size = 9;
+params.init_harris_kappa = 0.08;
+params.init_nonmaximum_supression_radius = 8;
+params.init_descriptor_radius = 9;
+params.init_match_lambda = 5;
+params.init_num_keypoints = 1000;
+params.init_num_it_ransac = 200;
+params.init_pixel_tolerance = 1;
+params.proc_discard_max = 10;
+params.proc_candidate_discard_max = 10;
+params.proc_min_keypoint_threshold = 30;
+params.proc_re_init_after = 10;
+params.track_min_kp_dist_to_edge = 10;
+params.triang_min_angle = 1;
+params.triang_max_angle = 5.8;
+params.triang_min_iterations = 1;
+params.triang_penalty = inf; 
+params.pose_num_iterations = 500;
+params.pose_pixel_tolerance = 5;
+params.extract_harris_patch_size = 9;
+params.extract_harris_kappa = 0.08;
+params.extract_num_keypoints = 500;
+params.extract_nonmaximum_supression_radius = 8;
+params.extract_min_distance = 30;
+end
