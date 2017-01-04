@@ -14,6 +14,7 @@ function [current_keypoints,current_candidate_keypoints,discard,candidate_discar
 %   - discard: 1xN
 %   - candidate_discard: 1xM
 
+min_dist_edge_of_the_screen = 10;
 
 %% Keypoints tracking
 points = (previous_state_keypoints)';
@@ -30,10 +31,10 @@ initialize(pointTracker,points,previous_image);
 % discard = discard.*(point_validity)';
 
 % Delete points which are not in the image anymore
-discard(new_points(:,1)<0 | new_points(:,2)<0)  = inf;
+discard(new_points(:,1)<min_dist_edge_of_the_screen | new_points(:,2)<min_dist_edge_of_the_screen)  = inf;
 % new_points(new_points(:,1)>width,:) = 0;
 % new_points(new_points(:,2)>height,:) = 0;
-discard(new_points(:,2)>height | new_points(:,1)>width)  = inf;
+discard(new_points(:,2)>(height-min_dist_edge_of_the_screen) | new_points(:,1)>(width-min_dist_edge_of_the_screen)) = inf;
 
 % new_points(sum((new_points==0),2)>0,:) = [];
 discard(~point_validity) = inf;
