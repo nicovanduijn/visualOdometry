@@ -75,15 +75,15 @@ end
 state = struct;
 state.pose = [R', -R'*T];
 state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),K*eye(3,4),K*[R,T]);
-del =  state.landmarks(3,:)<0; %delete points behind camera
-state.landmarks(:,del) = [];
+del = state.landmarks(state.landmarks(3,:)<0);
+
 state.keypoints = p_1(1:2,inlier_mask);
-state.keypoints(:,del)=[];
 state.candidate_keypoints = zeros(2,0);
 state.candidate_keypoints_1 = zeros(2,0);
 state.candidate_pose_1 = zeros(12,0);
 state.K = K;
 state.discard =zeros(1,size(state.landmarks,2));
+state.discard() =inf ; 
 state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 state.previous_keypoints = zeros(2,0);
 state.new_candidate_keypoints = zeros(2,0);

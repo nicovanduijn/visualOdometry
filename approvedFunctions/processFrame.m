@@ -53,12 +53,10 @@ if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_
     disp('lost tracking! re-initializing VO pipeline...');
     
     [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
-        current_image,current_keypoints,zeros(2,0),previous_state.candidate_keypoints,current_state.pose,discard,candidate_discard);
+        current_image,current_state.keypoints,zeros(2,0),previous_state.candidate_keypoints,current_state.pose,current_state.discard,candidate_discard);
     
-    candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
-    
+     candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
     candidate_del = candidate_discard > candidate_discard_max;
-    
     current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
     current_state.candidate_keypoints = [current_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
     current_state.candidate_keypoints_1 = [previous_state.candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
