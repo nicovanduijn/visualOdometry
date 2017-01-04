@@ -7,7 +7,7 @@ function [adjusted_landmarks,current_landmarkBundleAdjustment_struct] = landmark
 
 %% Parameters
 
-min_observations = 1;
+min_observations = 5;
 max_observations = 10;
 
 %% Code
@@ -32,31 +32,52 @@ M1 = K*current_pose_inv;
 
 landmarks = landmarks(:,~del);
 
+disp('Landmark bundle adjustment:')
+disp(['    Maximum value in counter: ' num2str(max(counter))])
+
 P = NaN(4,num_landmarks);
 adjusted = false(1,num_landmarks);
+% angle = zeros(num_landmarks,max_observations);
 for j=1:num_landmarks
     if counter(j) >= min_observations
         A1 = cross2Matrix(p1(:,j))*M1;
         
-        A2 = zeros(3*counter(j),4);
+        A2 = [];
         for i = 1:min(counter(j),max_observations)
-            M2 = K*invertPose(reshape(previous_landmark_poses(:,j),[3,4]));
-            A2((i-1)*3+1:i*3,:) = cross2Matrix([previous_keypoints(:,j,i); 1])*M2;
+            M2 = K*invertPose(reshape(previous_landmark_poses(:,j,i),[3,4]));
+            % A2((i-1)*3+1:i*3,:) = cross2Matrix([previous_keypoints(:,j,i); 1])*M2;
+            A2_temp = cross2Matrix([previous_keypoints(:,j,i); 1])*M2;
+            
+            a = landmarks(1:3,j) - current_pose(1:3,4);
+            b = landmarks(1:3,j) - previous_landmark_poses(10:12,j,i);
+            % angle(j,i) = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
+            angle = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
+            if angle > 1 && angle < 1.8 % Check if angles are good
+               A2 = [A2; A2_temp]; 
+            end
         end
         
-        A = [A1; A2];
-        [~,~,v] = svd(A,0);
-        P(:,j) = v(:,4)/v(4,4); % Extract and dehomogenize (P is expressed in homogeneous coordinates)
-        
-        if current_pose_inv(3,:)*P(:,j) < 0
-            P(:,j) = landmarks(:,j);
+        if ~isempty(A2)
+            A = [A1; A2];
+            [~,~,v] = svd(A,0);
+            P(:,j) = v(:,4)/v(4,4); % Extract and dehomogenize (P is expressed in homogeneous coordinates)
+
+            if current_pose_inv(3,:)*P(:,j) > 0
+                adjusted(j) = true;
+            else
+                P(:,j) = landmarks(:,j);
+                disp('    Point triangulated behind camera!')
+            end
         else
-            adjusted(j) = true;
+            P(:,j) = landmarks(:,j);
         end
     else
         P(:,j) = landmarks(:,j);
     end
 end
+
+disp(['    Number of landmarks: ' num2str(num_landmarks)])
+disp(['    Number of adjusted landmarks: ' num2str(sum(adjusted))])
 
 adjusted_landmarks = [P new_landmarks];
 
@@ -74,10 +95,6 @@ hold on
 plot(P(1,adjusted),P(3,adjusted), 'bx')
 axis equal
 hold off
-
-%del
-%adjusted
-disp(['Maximum value in counter: ' num2str(max(counter))])
 
 % Output
 current_landmarkBundleAdjustment_struct.previous_landmark_poses = cat(3, repmat(current_pose(:),[1,num_adjusted_landmarks,1]), cat(2,previous_landmark_poses(:,:,1:max_observations-1),NaN(12,num_new_landmarks,max_observations-1)));
