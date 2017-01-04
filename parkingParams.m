@@ -11,6 +11,7 @@ params.init_pixel_tolerance = 1;
 params.proc_discard_max = 10;
 params.proc_candidate_discard_max = 10;
 params.proc_min_keypoint_threshold = 30;
+params.proc_re_init_after = 10;
 params.track_min_kp_dist_to_edge = 10;
 params.triang_min_angle = 1;
 params.triang_max_angle = 5.8;

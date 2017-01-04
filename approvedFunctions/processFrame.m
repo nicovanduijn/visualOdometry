@@ -23,6 +23,7 @@ global params;
 discard_max = params.proc_discard_max; % Points with a higher vote are discarded (currently: random choice)
 candidate_discard_max = params.proc_candidate_discard_max; % Points with a higher vote are discarded (currently: random choice)
 min_keypoint_threshold = params.proc_min_keypoint_threshold;
+re_init_after = params.proc_re_init_after;
 
 %% Preliminary stuff
 
@@ -45,7 +46,7 @@ K = previous_state.K;
 % disp(['Number of inf values in discard after P3P: ' num2str(sum(discard == inf))])
 
 %% Check if number of keypoints too low
-if(sum(discard==0)<=min_keypoint_threshold)
+if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_init_after)
     current_state = initializePose(previous_image, current_image, K);
     current_state.pose = previous_state.pose* [current_state.pose; 0 0 0 1];
     current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
@@ -102,6 +103,7 @@ current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new
 current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
 current_state.pose = current_pose;
 current_state.K = K;
+current_state.init_counter = previous_state.init_counter +1;
 
 %  disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
 %  disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
