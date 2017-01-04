@@ -51,6 +51,8 @@ if(sum(discard==0)<=min_keypoint_threshold)
     current_state.pose = previous_state.pose* [current_state.pose; 0 0 0 1];
     current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
     
+    current_state.landmarkBundleAdjustment_struct = struct();
+    
     % Look for new candidate_keypoints and keep old candidate_keypoints
     [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
         current_image,current_keypoints,zeros(2,0),previous_state.candidate_keypoints,current_state.pose,discard,candidate_discard);
@@ -92,7 +94,15 @@ candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate feature
 del = discard > discard_max;
 candidate_del = candidate_discard > candidate_discard_max;
 
-current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
+% ------
+% Landmarks only bundle adjustment
+[current_state.landmarks,current_landmarkBundleAdjustment_struct] = landmarkBundleAdjustment(...
+    K,current_pose,current_keypoints,new_keypoints,previous_state.landmarks,new_landmarks,previous_state.landmarkBundleAdjustment_struct,del);
+
+current_state.landmarkBundleAdjustment_struct = current_landmarkBundleAdjustment_struct;
+% ------
+
+% current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
 current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
 current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
 current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];

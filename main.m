@@ -95,6 +95,8 @@ else
     state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
 end
 
+state.landmarkBundleAdjustment_struct = struct();
+
 %% Continuous operation
 range = (bootstrap_frames(2)+1):last_frame;
 for i = range
@@ -116,6 +118,7 @@ for i = range
      [state] = processFrame(state, prev_img, image);
 
     % plot that shit
+    figure(1)
     subplot(3,1,1);
     imshow(image);
     hold on;
