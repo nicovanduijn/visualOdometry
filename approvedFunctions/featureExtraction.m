@@ -2,11 +2,12 @@ function [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1
     current_image,current_keypoints,new_keypoints,candidate_keypoints,current_pose,discard,candidate_discard)
 
 %% Parameters
-harris_patch_size = 9;
-harris_kappa = 0.08;
-num_keypoints = 80;
-nonmaximum_supression_radius = 8;
-min_distance = 8; % Minimum distance new keypoints must have w.r.t. existing ones
+global params;
+harris_patch_size = params.extract_harris_patch_size;
+harris_kappa = params.extract_harris_kappa;
+num_keypoints = params.extract_num_keypoints;
+nonmaximum_supression_radius = params.extract_nonmaximum_supression_radius;
+min_distance = params.extract_min_distance; % Minimum distance new keypoints must have w.r.t. existing ones
 
 %% Code
 % tic

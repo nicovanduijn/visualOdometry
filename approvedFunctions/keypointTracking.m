@@ -14,7 +14,9 @@ function [current_keypoints,current_candidate_keypoints,discard,candidate_discar
 %   - discard: 1xN
 %   - candidate_discard: 1xM
 
-min_dist_edge_of_the_screen = 10;
+%% Parameters
+global params;
+min_dist_edge_of_the_screen = params.track_min_kp_dist_to_edge;
 
 %% Keypoints tracking
 points = (previous_state_keypoints)';

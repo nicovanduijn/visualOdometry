@@ -3,9 +3,10 @@ function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     K,current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
 
 %% Parameters
-min_angle = 1; % Degrees 1
-max_angle = 1.8; % Degrees 1.8
-min_iterations = 1; % 2
+global params;
+min_angle = params.triang_min_angle; % Degrees 1
+max_angle = params.triang_max_angle; % Degrees 1.8
+min_iterations = params.triang_min_iterations; % 2
 
 penalty = inf; % Penalty for points triangulated behind the camera
 

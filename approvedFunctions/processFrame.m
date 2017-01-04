@@ -19,10 +19,10 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %   - current_pose: 4x3 non-homogenous matrix representing pose [R|T]
 
 %% Paramters
-
-discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
-candidate_discard_max = 10; % Points with a higher vote are discarded (currently: random choice)
-min_keypoint_threshold = 30;
+global params;
+discard_max = params.proc_discard_max; % Points with a higher vote are discarded (currently: random choice)
+candidate_discard_max = params.proc_candidate_discard_max; % Points with a higher vote are discarded (currently: random choice)
+min_keypoint_threshold = params.proc_min_keypoint_threshold;
 
 %% Preliminary stuff
 
