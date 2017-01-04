@@ -12,6 +12,7 @@ malaga_path = 'data/malaga';
 addpath('providedFunctions'); % add provided functions from exercise sessions
 addpath('approvedFunctions');
 use_init = true;
+global params;
 % addpath('nicosFunctions');
 
 
@@ -24,6 +25,7 @@ if ds == 0
     K = [7.188560000000e+02 0 6.071928000000e+02
         0 7.188560000000e+02 1.852157000000e+02
         0 0 1];
+    params = kittiParams();
 elseif ds == 1
     % Path containing the many files of Malaga 7.
     assert(exist('malaga_path', 'var') ~= 0);
@@ -34,6 +36,7 @@ elseif ds == 1
     K = [621.18428 0 404.0076
         0 621.18428 309.05989
         0 0 1];
+    params = malagaParams();
 elseif ds == 2
     % Path containing images, depths and all...
     assert(exist('parking_path', 'var') ~= 0);
@@ -41,6 +44,7 @@ elseif ds == 2
     K = load([parking_path '/K.txt']);
     ground_truth = load([parking_path '/poses.txt']);
     ground_truth = ground_truth(:, [end-8 end]);
+    params =parkingParams();
 else
     assert(false);
 end
@@ -136,7 +140,9 @@ for i = range
     subplot(3,1,2);
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
-     plot(ground_truth(i,1),ground_truth(i,2),'bx');
+    if(~ds ==1) %no ground truth for malaga dataset
+        plot(ground_truth(i,1),ground_truth(i,2),'bx');
+    end
     legend('estimated path', 'ground truth');
     axis equal
     subplot(3,1,3)

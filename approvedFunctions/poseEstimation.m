@@ -6,8 +6,10 @@ function [ pose, discard] = poseEstimation(curr_keyp, landmarks, K, discard)
 % - K: [3x3] kamera matrix
 % - discard 1xN voting array
 
-num_iterations = 80;
-pixel_tolerance = 5;
+%% Parameters
+global params;
+num_iterations = params.pose_num_iterations;
+pixel_tolerance = params.pose_pixel_tolerance;
 
 matched_query_keypoints = curr_keyp(:,discard==0);
 corresponding_landmarks = landmarks(1:3,discard==0); %de-homogenize

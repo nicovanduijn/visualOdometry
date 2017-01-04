@@ -3,11 +3,12 @@ function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
     K,current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
 
 %% Parameters
-min_angle = 1; % Degrees 1
-max_angle = 1.8; % Degrees 1.8
-min_iterations = 1; % 2
+global params;
 
-penalty = inf; % Penalty for points triangulated behind the camera
+min_angle = params.triang_min_angle; % Degrees 1
+max_angle = params.triang_max_angle; % Degrees 1.8
+min_iterations = params.triang_min_iterations; % 2
+penalty = params.triang_penalty; % Penalty for points triangulated behind the camera
 
 %% Code
 
@@ -54,9 +55,9 @@ angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b)));
 new = (min_angle < abs(angle)*180/pi) & (max_angle > abs(angle)*180/pi) & ~behind_camera & ~isinf(candidate_discard) & candidate_discard > min_iterations;
 
 
-% disp('New landmarks with associated angle (last row): ')
-% disp(num2str([P(:,new); 180/pi*angle(:,new)]))
-% disp(' ')
+disp('New landmarks with associated angle (last row): ')
+disp(num2str([P(:,new); 180/pi*angle(:,new)]))
+disp(' ')
 
 % Output
 new_keypoints = candidate_keypoints(:,new);
