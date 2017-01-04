@@ -11,6 +11,7 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %       * K: 3x3
 %       * discard 1xN
 %       * candidate_discard 1xM
+%       * init_counter 1x1
 %   - previous_image: XxY
 %   - current_image: XxY
 %
@@ -55,7 +56,7 @@ if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_
     [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
         current_image,current_state.keypoints,zeros(2,0),previous_state.candidate_keypoints,current_state.pose,current_state.discard,candidate_discard);
     
-     candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
+    candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
     candidate_del = candidate_discard > candidate_discard_max;
     current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
     current_state.candidate_keypoints = [current_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
@@ -63,50 +64,50 @@ if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_
     current_state.candidate_pose_1 = [previous_state.candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
     current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
 else
-
-%% Apply linear triangulation on keypoints without associated landmark
-
-[new_keypoints,new_landmarks,updated_candidate_keypoints,updated_candidate_keypoints_1,...
-    updated_candidate_pose_1,candidate_discard] = landmarkTriangulation(...
-    K,current_pose,previous_state.candidate_pose_1,current_candidate_keypoints,...
-    previous_state.candidate_keypoints_1,candidate_discard);
-
-%% Find new features
-%  - Perform suppression around existing features?
-%  - How about FAST instead of Harris?
-%  - Do this in every iteration or only once in a while?
-%  - Note: new_candidate_keypoints = new_candidate_keypoints_1!
-[new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
-    current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,current_pose,discard,candidate_discard);
-
-%% What is left to do
-disp(['Number of new keypoints: ' num2str(size(new_keypoints,2))])
-disp(['Number of keypoints: ' num2str(size(current_keypoints,2))])
-% disp(['Any NaN values in candidate_discard: ' num2str(any(isnan(candidate_discard)))])
-% disp(['Any NaN values in discard: ' num2str(any(isnan(discard)))])
-
-candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
-
-del = discard > discard_max;
-candidate_del = candidate_discard > candidate_discard_max;
-
-current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
-current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
-current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
-current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];
-current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
-current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
-current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
-current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
-current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
-current_state.pose = current_pose;
-current_state.K = K;
-current_state.init_counter = previous_state.init_counter +1;
-
-%  disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
-%  disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
- disp('Current pose: ')
- disp(num2str(current_pose))
+    
+    %% Apply linear triangulation on keypoints without associated landmark
+    
+    [new_keypoints,new_landmarks,updated_candidate_keypoints,updated_candidate_keypoints_1,...
+        updated_candidate_pose_1,candidate_discard] = landmarkTriangulation(...
+        K,current_pose,previous_state.candidate_pose_1,current_candidate_keypoints,...
+        previous_state.candidate_keypoints_1,candidate_discard);
+    
+    %% Find new features
+    %  - Perform suppression around existing features?
+    %  - How about FAST instead of Harris?
+    %  - Do this in every iteration or only once in a while?
+    %  - Note: new_candidate_keypoints = new_candidate_keypoints_1!
+    [new_candidate_keypoints,new_candidate_keypoints_1,new_candidate_pose_1] = featureExtraction(...
+        current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,current_pose,discard,candidate_discard);
+    
+    %% What is left to do
+    disp(['Number of new keypoints: ' num2str(size(new_keypoints,2))])
+    disp(['Number of keypoints: ' num2str(size(current_keypoints,2))])
+    % disp(['Any NaN values in candidate_discard: ' num2str(any(isnan(candidate_discard)))])
+    % disp(['Any NaN values in discard: ' num2str(any(isnan(discard)))])
+    
+    candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
+    
+    del = discard > discard_max;
+    candidate_del = candidate_discard > candidate_discard_max;
+    
+    current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
+    current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
+    current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
+    current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];
+    current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
+    current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
+    current_state.candidate_keypoints_1 = [updated_candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
+    current_state.candidate_pose_1 = [updated_candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
+    current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
+    current_state.pose = current_pose;
+    current_state.K = K;
+    current_state.init_counter = previous_state.init_counter +1;
+    
+    %  disp(['Any current_keypoints smaller than zero: ', num2str(any(current_state.keypoints(:) < 0))])
+    %  disp(['Any candidate_keypoints smaller than zero: ', num2str(any(current_state.candidate_keypoints(:) < 0))])
+    disp('Current pose: ')
+    disp(num2str(current_pose))
 end
 
 end

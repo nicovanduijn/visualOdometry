@@ -5,7 +5,7 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking
+ds = 2; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
@@ -117,8 +117,8 @@ for i = range
     end
     
     % do all the fancy stuff
-     [state] = processFrame(state, prev_img, image);
-
+    [state] = processFrame(state, prev_img, image);
+    
     % plot that shit
     subplot(3,1,1);
     imshow(image);
@@ -140,7 +140,7 @@ for i = range
     subplot(3,1,2);
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
-    if(~ds ==1) %no ground truth for malaga dataset
+    if(ds ~= 1) %no ground truth for malaga dataset
         plot(ground_truth(i,1),ground_truth(i,2),'bx');
     end
     legend('estimated path', 'ground truth');
