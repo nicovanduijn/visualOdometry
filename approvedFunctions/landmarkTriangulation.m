@@ -1,5 +1,5 @@
 function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
-    updated_candidate_keypoints_1,updated_candidate_pose_1,updated_candidate_discard] = landmarkTriangulation(...
+    updated_candidate_keypoints_1,updated_candidate_pose_1,updated_candidate_discard,new] = landmarkTriangulation(...
     K,current_pose,candidate_pose_1,candidate_keypoints,candidate_keypoints_1,candidate_discard)
 
 %% Parameters
@@ -7,10 +7,8 @@ global params;
 min_angle = params.triang_min_angle; % Degrees 1
 max_angle = params.triang_max_angle; % Degrees 1.8
 min_iterations = params.triang_min_iterations; % 2
-
-penalty = inf; % Penalty for points triangulated behind the camera
-
-max_reprojection_error = 1;
+max_reprojection_error = params.triang_max_reprojection_error; % 1
+penalty = params.triang_penalty; % Penalty for points triangulated behind the camera
 
 %% Code
 

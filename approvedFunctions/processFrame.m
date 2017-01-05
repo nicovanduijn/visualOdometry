@@ -32,6 +32,10 @@ discard = previous_state.discard;
 candidate_discard = previous_state.candidate_discard;
 K = previous_state.K;
 
+% Test whether landmarks which are far away should be discarded
+% P_C = previous_state.landmarks(1:3,:) - previous_state.pose(:,4);
+% discard(sqrt(dot(P_C,P_C)) > 50) = inf;
+
 %% Apply KLT on current_image
 
 % disp(['Number of inf values in discard at beginning: ' num2str(sum(discard == inf))])
@@ -63,6 +67,7 @@ if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_
     candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
     candidate_del = candidate_discard > candidate_discard_max;
     current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only
+    current_state.previous_candidate_keypoints = previous_state.candidate_keypoints(:,~candidate_del); % For plotting only
     current_state.candidate_keypoints = [current_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
     current_state.candidate_keypoints_1 = [previous_state.candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
     current_state.candidate_pose_1 = [previous_state.candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
@@ -72,7 +77,7 @@ else
 %% Apply linear triangulation on keypoints without associated landmark
 
 [new_keypoints,new_landmarks,updated_candidate_keypoints,updated_candidate_keypoints_1,...
-    updated_candidate_pose_1,candidate_discard] = landmarkTriangulation(...
+    updated_candidate_pose_1,candidate_discard,new_mask] = landmarkTriangulation(...
     K,current_pose,previous_state.candidate_pose_1,current_candidate_keypoints,...
     previous_state.candidate_keypoints_1,candidate_discard);
 
@@ -106,6 +111,8 @@ current_state.landmarkBundleAdjustment_struct = current_landmarkBundleAdjustment
 % current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
 current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
 current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
+current_state.previous_candidate_keypoints = previous_state.candidate_keypoints(:,~new_mask); % For plotting only
+    current_state.previous_candidate_keypoints = current_state.previous_candidate_keypoints(:,~candidate_del);
 current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];
 current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
 current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only

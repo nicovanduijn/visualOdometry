@@ -7,9 +7,10 @@ function [adjusted_landmarks,current_landmarkBundleAdjustment_struct] = landmark
 
 %% Parameters
 
-min_observations = 5;
-max_observations = 10;
-max_reprojection_error = 1;
+global params;
+min_observations = params.lba_min_observations; % 5
+max_observations = params.lba_max_observations; % 10 
+max_reprojection_error = params.lba_max_reprojection_error; % 1
 
 %% Code
 

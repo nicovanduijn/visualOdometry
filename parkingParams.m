@@ -15,6 +15,7 @@ params.proc_re_init_after = 20;
 params.track_min_kp_dist_to_edge = 10;
 params.triang_min_angle = 1;
 params.triang_max_angle = 6.8;
+params.triang_max_reprojection_error = inf; % 1? Not sure, what a good value would be (yvain)
 params.triang_min_iterations = 1;
 params.triang_penalty = inf; 
 params.pose_num_iterations = 500;
@@ -24,4 +25,7 @@ params.extract_harris_kappa = 0.08;
 params.extract_num_keypoints = 500;
 params.extract_nonmaximum_supression_radius = 8;
 params.extract_min_distance = 30;
+params.lba_min_observations = 5;
+params.lba_max_observations = 10; 
+params.lba_max_reprojection_error = 1;
 end

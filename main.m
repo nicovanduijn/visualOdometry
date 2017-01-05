@@ -135,11 +135,20 @@ for i = range
     hold on;
     plot(state.new_candidate_keypoints(1,:), state.new_candidate_keypoints(2,:), 'rx');
     hold on;
+    num_old_candidate_keypoints = size(state.previous_candidate_keypoints,2);
+    plot(state.candidate_keypoints(1,1:num_old_candidate_keypoints), state.candidate_keypoints(2,1:num_old_candidate_keypoints), 'yx');
+    hold on;
     x_from = state.previous_keypoints(1,:);
     x_to = state.keypoints(1,1:num_old_keypoints);
     y_from = state.previous_keypoints(2,:);
     y_to = state.keypoints(2,1:num_old_keypoints);
     plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
+    hold on;
+    x_from = state.previous_candidate_keypoints(1,:);
+    x_to = state.candidate_keypoints(1,1:num_old_candidate_keypoints);
+    y_from = state.previous_candidate_keypoints(2,:);
+    y_to = state.candidate_keypoints(2,1:num_old_candidate_keypoints);
+    plot([x_from; x_to], [y_from; y_to], 'y-', 'Linewidth', 3);
     hold off;
     
     subplot(3,1,2);
