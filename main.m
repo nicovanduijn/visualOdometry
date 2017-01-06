@@ -5,10 +5,11 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+ds = 3; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
+own_path = 'data/cameraCalibration';
 addpath('providedFunctions'); % add provided functions from exercise sessions
 addpath('approvedFunctions');
 use_init = true;
@@ -45,6 +46,17 @@ elseif ds == 2
     ground_truth = load([parking_path '/poses.txt']);
     ground_truth = ground_truth(:, [end-8 end]);
     params =parkingParams();
+elseif ds == 3
+    % Path containing images, depths and all...
+    assert(exist('own_path', 'var') ~= 0);
+    
+    K = (csvread([own_path '/K.txt']))';
+    params =parkingParams();%lfwParams();
+    cameraParams = load([own_path '/cameraParams.mat']);
+    cameraParams = cameraParams.cameraParams;
+    video = VideoReader([own_path '/Path/Video_ETH_1.mp4']);
+    video_frames = read(video);
+    last_frame = size(video_frames,4);
 else
     assert(false);
 end
@@ -71,6 +83,17 @@ elseif ds == 2
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
+elseif ds == 3
+    bootstrap_frames = [1;3]; % for now, just use first and third frame
+    img0 = rgb2gray(video_frames(:,:,:,bootstrap_frames(1)));
+%     img0 = undistortImage(img0,cameraParams);
+    img1 = rgb2gray(video_frames(:,:,:,bootstrap_frames(2)));
+%     img1 = undistortImage(img1,cameraParams);
+%     img0 = rgb2gray(imread([own_path ...
+%         sprintf('/Path/Path_Home(%d).jpg',bootstrap_frames(1))]));
+%     img0 = undistortImage(img0,cameraParams);
+%     img1 = undistortImage(rgb2gray(imread([own_path ...
+%         sprintf('/Path/Path_Home(%d).jpg',bootstrap_frames(2))])),cameraParams);
 else
     assert(false);
 end
@@ -112,6 +135,11 @@ for i = range
     elseif ds == 2
         image = im2uint8(rgb2gray(imread([parking_path ...
             sprintf('/images/img_%05d.png',i)])));
+    elseif ds == 3
+        image = rgb2gray(video_frames(:,:,:,4+(i-3)*8));
+%         image = undistortImage(image,cameraParams);
+%         image = undistortImage(rgb2gray(imread([own_path ...
+%             sprintf('/Path/Path_Home(%d).jpg',i)])),cameraParams);
     else
         assert(false);
     end
@@ -140,7 +168,7 @@ for i = range
     subplot(3,1,2);
     plot(state.pose(1,4),state.pose(3,4),'rx'); %simple birds-eye view of our path
     hold on
-    if(ds ~= 1) %no ground truth for malaga dataset
+    if(ds ~= 1 && ds ~= 3) %no ground truth for malaga dataset
         plot(ground_truth(i,1),ground_truth(i,2),'bx');
     end
     legend('estimated path', 'ground truth');
