@@ -5,7 +5,7 @@ close all
 rng(1);
 tic
 % set the dataset to use
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking
+ds = 2; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
@@ -136,14 +136,29 @@ for i = range
     init_counter = state.init_counter;
 end
 toc
+% figure(1)
+% plot(path(1,~reinit_mask),path(3,~reinit_mask),'r');
+% hold on
+% plot(path(1,reinit_mask),path(3,reinit_mask),'mo', 'MarkerSize', 10);
+% hold on
+% if(ds ~= 1) %no ground truth for malaga dataset
+%     plot(ground_truth(range,1),ground_truth(range,2),'b');
+% end
+% legend('estimated path', 'reinit', 'ground truth');
+% axis equal
+% hold off
+
+%% Plots
 figure(1)
-plot(path(1,~reinit_mask),path(3,~reinit_mask),'rx');
+plot(path(1,~reinit_mask),path(3,~reinit_mask),'r','DisplayName','estimated path')
 hold on
-plot(path(1,reinit_mask),path(3,reinit_mask),'mo', 'MarkerSize', 10);
+% plot(path(1,~reinit_mask),path(3,~reinit_mask),'rx','MarkerSize',3)
+% hold on
+plot(path(1,reinit_mask),path(3,reinit_mask),'mo','MarkerSize',5,'DisplayName','reinitialization')
 hold on
 if(ds ~= 1) %no ground truth for malaga dataset
-    plot(ground_truth(range,1),ground_truth(range,2),'bx');
+    plot(ground_truth(range,1),ground_truth(range,2),'b','DisplayName','ground truth')
 end
-legend('estimated path', 'reinit', 'ground truth');
+legend('show')
 axis equal
 hold off

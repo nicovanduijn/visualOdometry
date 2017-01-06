@@ -86,20 +86,20 @@ disp(['    Number of adjusted landmarks: ' num2str(sum(adjusted))])
 
 adjusted_landmarks = [P new_landmarks];
 
-figure(10)
-plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go')
-hold on
-plot(landmarks(1,adjusted),landmarks(3,adjusted), 'mo')
-hold on
-x_from = landmarks(1,adjusted);
-x_to = P(1,adjusted);
-z_from = landmarks(3,adjusted);
-z_to = P(3,adjusted);
-plot([x_from; x_to], [z_from; z_to], 'm-', 'Linewidth', 1);
-hold on
-plot(P(1,adjusted),P(3,adjusted), 'bx')
-axis equal
-hold off
+% figure(10)
+% plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go')
+% hold on
+% plot(landmarks(1,adjusted),landmarks(3,adjusted), 'mo')
+% hold on
+% x_from = landmarks(1,adjusted);
+% x_to = P(1,adjusted);
+% z_from = landmarks(3,adjusted);
+% z_to = P(3,adjusted);
+% plot([x_from; x_to], [z_from; z_to], 'm-', 'Linewidth', 1);
+% hold on
+% plot(P(1,adjusted),P(3,adjusted), 'bx')
+% axis equal
+% hold off
 
 % Output
 current_landmarkBundleAdjustment_struct.poses = [current_pose(:) previous_landmark_poses(:,1:max_observations-1)];
