@@ -53,11 +53,6 @@ elseif ds == 3
     K = (csvread([eth_path '/K.txt']))';
     params =ethParams();
     last_frame = 866;
-%     cameraParams = load([eth_path '/cameraParams.mat']);
-%     cameraParams = cameraParams.cameraParams;
-%     video = VideoReader([eth_path '/Path/Video_ETH.mp4']);
-%     video_frames = read(video);
-%     last_frame = size(video_frames,4);
 else
     assert(false);
 end
@@ -91,15 +86,6 @@ elseif ds == 3
     img1 = imread([eth_path ...
         sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(2))]);
     
-%     img0 = rgb2gray(video_frames(:,:,:,bootstrap_frames(1)));
-% %     img0 = undistortImage(img0,cameraParams);
-%     img1 = rgb2gray(video_frames(:,:,:,bootstrap_frames(2)));
-%     img1 = undistortImage(img1,cameraParams);
-% %     img0 = rgb2gray(imread([own_path ...
-% %         sprintf('/Path/Path_Home(%d).jpg',bootstrap_frames(1))]));
-%     img0 = undistortImage(img0,cameraParams);
-% %     img1 = undistortImage(rgb2gray(imread([own_path ...
-% %         sprintf('/Path/Path_Home(%d).jpg',boot2trap_frames(2))])),cameraParams);
 else
     assert(false);
 end
@@ -148,9 +134,6 @@ for i = range
     elseif ds == 3
         image = imread([eth_path ...
             sprintf('/Path/Path_ETH_%04d.png',i)]);
-%         image = undistortImage(image,cameraParams);
-%         image = undistortImage(rgb2gray(imread([own_path ...
-%             sprintf('/Path/Path_Home(%d).jpg',i)])),cameraParams);
     else
         assert(false);
     end
