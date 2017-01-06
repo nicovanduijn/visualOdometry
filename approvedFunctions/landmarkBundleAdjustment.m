@@ -33,12 +33,12 @@ M1 = K*current_pose_inv;
 
 landmarks = landmarks(:,~del);
 
-disp('Landmark bundle adjustment:')
-disp(['    Maximum value in counter: ' num2str(max(counter))])
+% disp('Landmark bundle adjustment:')
+% disp(['    Maximum value in counter: ' num2str(max(counter))])
 
 P = NaN(4,num_landmarks);
 adjusted = false(1,num_landmarks);
-% angle = zeros(num_landmarks,max_observations);
+
 for j=1:num_landmarks
     if counter(j) >= min_observations && reprojectionError(p1(1:2,j),landmarks(:,j),M1) < max_reprojection_error
         A1 = cross2Matrix(p1(:,j))*M1;
@@ -46,20 +46,12 @@ for j=1:num_landmarks
         A2 = [];
         for i = 1:min(counter(j),max_observations)
             M2 = K*invertPose(reshape(previous_landmark_poses(:,i),[3,4]));
-            % A2((i-1)*3+1:i*3,:) = cross2Matrix([previous_keypoints(:,j,i); 1])*M2;
             A2_temp = cross2Matrix([previous_keypoints(:,j,i); 1])*M2;
             
             if reprojectionError(previous_keypoints(:,j,i),landmarks(:,j),M2) < max_reprojection_error % Only take points, which reproject close enough
                A2 = [A2; A2_temp]; 
             end
-            
-            % a = landmarks(1:3,j) - current_pose(1:3,4);
-            % b = landmarks(1:3,j) - previous_landmark_poses(10:12,i);
-            % % angle(j,i) = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
-            % angle = abs(acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b))))*180/pi;
-            % if angle > 1 && angle < 1.8 % Check if angles are good
-            %    A2 = [A2; A2_temp]; 
-            % end
+
         end
         
         if ~isempty(A2)
@@ -81,12 +73,14 @@ for j=1:num_landmarks
     end
 end
 
-disp(['    Number of landmarks: ' num2str(num_landmarks)])
-disp(['    Number of adjusted landmarks: ' num2str(sum(adjusted))])
+% disp(['    Number of landmarks: ' num2str(num_landmarks)])
+% disp(['    Number of adjusted landmarks: ' num2str(sum(adjusted))])
 
 adjusted_landmarks = [P new_landmarks];
 
-figure(10)
+
+%% Plot Landmarks
+subplot(2,2,4);
 plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go')
 hold on
 plot(landmarks(1,adjusted),landmarks(3,adjusted), 'mo')
@@ -98,6 +92,8 @@ z_to = P(3,adjusted);
 plot([x_from; x_to], [z_from; z_to], 'm-', 'Linewidth', 1);
 hold on
 plot(P(1,adjusted),P(3,adjusted), 'bx')
+hold on
+plot(current_pose(1,4),current_pose(3,4),'rx')
 axis equal
 hold off
 

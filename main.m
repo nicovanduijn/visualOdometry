@@ -5,17 +5,14 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 3; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
 own_path = 'data/cameraCalibration';
-addpath('providedFunctions'); % add provided functions from exercise sessions
 addpath('approvedFunctions');
 use_init = true;
 global params;
-% addpath('nicosFunctions');
-
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -49,7 +46,6 @@ elseif ds == 2
 elseif ds == 3
     % Path containing images, depths and all...
     assert(exist('own_path', 'var') ~= 0);
-    
     K = (csvread([own_path '/K.txt']))';
     params =parkingParams();%lfwParams();
     cameraParams = load([own_path '/cameraParams.mat']);
@@ -86,14 +82,7 @@ elseif ds == 2
 elseif ds == 3
     bootstrap_frames = [1;3]; % for now, just use first and third frame
     img0 = rgb2gray(video_frames(:,:,:,bootstrap_frames(1)));
-%     img0 = undistortImage(img0,cameraParams);
     img1 = rgb2gray(video_frames(:,:,:,bootstrap_frames(2)));
-%     img1 = undistortImage(img1,cameraParams);
-%     img0 = rgb2gray(imread([own_path ...
-%         sprintf('/Path/Path_Home(%d).jpg',bootstrap_frames(1))]));
-%     img0 = undistortImage(img0,cameraParams);
-%     img1 = undistortImage(rgb2gray(imread([own_path ...
-%         sprintf('/Path/Path_Home(%d).jpg',bootstrap_frames(2))])),cameraParams);
 else
     assert(false);
 end
@@ -124,8 +113,8 @@ end
 
 state.landmarkBundleAdjustment_struct = struct();
 
-%% Continuous operation
 
+%% Continuous operation
 init_counter = 0;
 range = (bootstrap_frames(2)+1):last_frame;
 for i = range
@@ -141,9 +130,6 @@ for i = range
             sprintf('/images/img_%05d.png',i)])));
     elseif ds == 3
         image = rgb2gray(video_frames(:,:,:,4+(i-3)*8));
-%         image = undistortImage(image,cameraParams);
-%         image = undistortImage(rgb2gray(imread([own_path ...
-%             sprintf('/Path/Path_Home(%d).jpg',i)])),cameraParams);
     else
         assert(false);
     end
@@ -151,9 +137,8 @@ for i = range
     % do all the fancy stuff
     [state] = processFrame(state, prev_img, image);
     
-    % plot that shit
-    figure(1)
-    subplot(3,1,1);
+    % plot everything
+    subplot(2,2,1:2);
     imshow(image);
     hold on;
     plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
@@ -178,8 +163,7 @@ for i = range
     y_to = state.candidate_keypoints(2,1:num_old_candidate_keypoints);
     plot([x_from; x_to], [y_from; y_to], 'y-', 'Linewidth', 3);
     hold off;
-    
-    subplot(3,1,2);
+    subplot(2,2,3);
     if state.init_counter <= init_counter
         plot(state.pose(1,4),state.pose(3,4),'mo', 'MarkerSize', 10); %simple birds-eye view of our path
     else
@@ -191,12 +175,6 @@ for i = range
     end
     legend('estimated path', 'ground truth');
     axis equal
-    subplot(3,1,3)
-    plot(state.landmarks(1,:),state.landmarks(3,:), 'gx')
-    hold on
-    plot(state.pose(1,4),state.pose(3,4),'rx')
-    axis equal
-    hold off
     
     % Makes sure that plots refresh.
     pause(0.01);

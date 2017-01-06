@@ -4,10 +4,10 @@ function [new_keypoints,new_landmarks,updated_candidate_keypoints,...
 
 %% Parameters
 global params;
-min_angle = params.triang_min_angle; % Degrees 1
-max_angle = params.triang_max_angle; % Degrees 1.8
-min_iterations = params.triang_min_iterations; % 2
-max_reprojection_error = params.triang_max_reprojection_error; % 1
+min_angle = params.triang_min_angle; % Degrees 
+max_angle = params.triang_max_angle; % Degrees
+min_iterations = params.triang_min_iterations; 
+max_reprojection_error = params.triang_max_reprojection_error; %
 penalty = params.triang_penalty; % Penalty for points triangulated behind the camera
 
 %% Code
@@ -54,10 +54,6 @@ angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b)));
 angle_reliable = (min_angle < abs(angle)*180/pi) & (max_angle > abs(angle)*180/pi);
 
 new = angle_reliable & repro_reliable & ~behind_camera & ~isinf(candidate_discard) & candidate_discard > min_iterations;
-
-% disp('New landmarks with associated angle (last row): ')
-% disp(num2str([P(:,new); 180/pi*angle(:,new)]))
-% disp(' ')
 
 % Output
 new_keypoints = candidate_keypoints(:,new);
