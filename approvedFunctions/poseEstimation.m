@@ -84,15 +84,11 @@ if max_num_inliers == 0
     R_C_W = [];
     t_C_W = [];
 else
-%     M_C_W = estimatePoseDLT(...
-%         matched_query_keypoints(:, inlier_mask>0)', ...
-%         corresponding_landmarks(:, inlier_mask>0)', K);
-     R_C_W = best_R;%M_C_W(:, 1:3);
-     t_C_W = best_t;%M_C_W(:, end);
+     R_C_W = best_R;
+     t_C_W = best_t;
 end
 
 pose = [R_C_W', -R_C_W'*t_C_W];
-% pose = [R_C_W, t_C_W];
 discard(~inlier_mask)=discard(~inlier_mask)+inf;
 
 end

@@ -29,16 +29,9 @@ initialize(pointTracker,points,previous_image);
 
 [new_points,point_validity] = step(pointTracker,current_image);
 
-% new_points = new_points.*point_validity;
-% discard = discard.*(point_validity)';
-
 % Delete points which are not in the image anymore
 discard(new_points(:,1)<min_dist_edge_of_the_screen | new_points(:,2)<min_dist_edge_of_the_screen)  = inf;
-% new_points(new_points(:,1)>width,:) = 0;
-% new_points(new_points(:,2)>height,:) = 0;
 discard(new_points(:,2)>(height-min_dist_edge_of_the_screen) | new_points(:,1)>(width-min_dist_edge_of_the_screen)) = inf;
-
-% new_points(sum((new_points==0),2)>0,:) = [];
 discard(~point_validity) = inf;
 
 %% Candidate keypoints tracking
@@ -52,7 +45,6 @@ if ~isempty(previous_state_candidate_keypoints)
     candidate_discard(new_candidate_points(:,1)<0 | new_candidate_points(:,2)<0)  = inf;
     candidate_discard(new_candidate_points(:,2)>height | new_candidate_points(:,1)>width)  = inf;
     candidate_discard(~candidate_point_validity) = inf;
-%      current_candidate_keypoints = new_candidate_points.*candidate_point_validity;
     current_candidate_keypoints = (new_candidate_points)';
 else
     current_candidate_keypoints = previous_state_candidate_keypoints;
@@ -60,11 +52,5 @@ else
 end
 
 current_keypoints = (new_points)';
-
-
-
-
-% discard = discard;
-% candidate_discard = candidate_discard;
 
 end
