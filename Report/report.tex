@@ -40,9 +40,9 @@ In the process of this course, we implemented several building blocks for a visu
 In order to increase the accuracy of the pose estimation and to combat scale drift, we run structure-only bundle adjustment on all landmarks which have already been observed a certain number of times. While this should not be as effective as full bundle adjustment, it is computationally significantly cheaper.\\
 Our approach is based on linear triangulation, but instead of only considering two point correspondences takes in account multiple ones. I.e., given $n$ point correspondences we have the following system of equations:
 \begin{equation*}
-\underbrace{\begin{bmatrix} \vec{p}_1^\times \mat{M}_1\\ \vdots \\ \vec{p}_n^\times \mat{M}_n \end{bmatrix}}_{\mat{A}} \underbrace{\begin{bmatrix} {}_W\vec{r}_{WP} \\ 1 \end{bmatrix}}_{\vec{x}} = 0_{6 \times 1} \quad \Rightarrow \quad \mat{A} \vec{x} = 0
+\underbrace{\begin{bmatrix} \vec{p}_1^\times \mat{M}_1\\ \vdots \\ \vec{p}_n^\times \mat{M}_n \end{bmatrix}}_{\mat{A}} \underbrace{\begin{bmatrix} {}_W\vec{r}_{WP} \\ 1 \end{bmatrix}}_{\vec{x}} = 0 \quad \Rightarrow \quad \mat{A} \vec{x} = 0
 \end{equation*}
-where $\mat{M}_i$ denotes the projection matrix of frame/image $i$. This linear-least squares problem is solved same as in the case for $2$ point correspondences. Crucial for this approach to work correctly is to not include any outliers. We therefore only take into account those observations where the reprojection error given the unadjusted landmark is sufficiently small. 
+where $\mat{M}_i$ denotes the projection matrix of frame/image $i$. This linear-least squares problem is solved same as in the case for 2 point correspondences. Crucial for this approach to work correctly is to not include any outliers. We therefore only take into account those observations where the reprojection error given the unadjusted landmark is sufficiently small. Furthermore a landmark is only adjusted if it has been observed for a minimum number of frames and also we only consider the $N$ most recent observations.
 
 \section{Parameters and Tuning}
 
