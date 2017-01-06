@@ -1,6 +1,9 @@
 data/
 
 .asv
+.aux
+.log
+.gz
 =======
 data/
 processFrame.asv
