@@ -3,16 +3,18 @@ clear all % clean up
 clc
 close all
 rng(1);
-
+tic
 % set the dataset to use
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
-eth_path = 'data/eth';
+addpath('providedFunctions'); % add provided functions from exercise sessions
 addpath('approvedFunctions');
 use_init = true;
 global params;
+% addpath('nicosFunctions');
+
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -43,13 +45,6 @@ elseif ds == 2
     ground_truth = load([parking_path '/poses.txt']);
     ground_truth = ground_truth(:, [end-8 end]);
     params =parkingParams();
-elseif ds == 3
-    % Path containing images, depths and all...
-    assert(exist('eth_path', 'var') ~= 0);
-    K = (csvread([eth_path '/K.txt']))';
-    params =ethParams();
-    last_frame = 866;
-
 else
     assert(false);
 end
@@ -76,13 +71,6 @@ elseif ds == 2
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
-elseif ds == 3
-    bootstrap_frames = [1;3]; % for now, just use first and third frame
-    img0 = imread([eth_path ...
-        sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(1))]);
-    img1 = imread([eth_path ...
-        sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(2))]);
-
 else
     assert(false);
 end
@@ -113,10 +101,15 @@ end
 
 state.landmarkBundleAdjustment_struct = struct();
 
-
 %% Continuous operation
+
 init_counter = 0;
-range = (bootstrap_frames(2)+1):last_frame;
+
+number_of_frames = last_frame; % last_frame
+range = (bootstrap_frames(2)+1):number_of_frames;
+
+path = zeros(3,range(end)-range(1));
+reinit_mask = false(1,range(end)-range(1));
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
@@ -128,9 +121,6 @@ for i = range
     elseif ds == 2
         image = im2uint8(rgb2gray(imread([parking_path ...
             sprintf('/images/img_%05d.png',i)])));
-    elseif ds == 3
-        image = imread([eth_path ...
-            sprintf('/Path/Path_ETH_%04d.png',i)]);
     else
         assert(false);
     end
@@ -138,49 +128,22 @@ for i = range
     % do all the fancy stuff
     [state] = processFrame(state, prev_img, image);
     
-    % plot everything
-    subplot(2,2,1:2);
-    imshow(image);
-    hold on;
-    plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
-    hold on;
-    num_old_keypoints = size(state.previous_keypoints,2);
-    plot(state.keypoints(1,num_old_keypoints+1:end), state.keypoints(2,num_old_keypoints+1:end), 'bx');
-    hold on;
-    plot(state.new_candidate_keypoints(1,:), state.new_candidate_keypoints(2,:), 'rx');
-    hold on;
-    num_old_candidate_keypoints = size(state.previous_candidate_keypoints,2);
-    plot(state.candidate_keypoints(1,1:num_old_candidate_keypoints), state.candidate_keypoints(2,1:num_old_candidate_keypoints), 'yx');
-    hold on;
-    x_from = state.previous_keypoints(1,:);
-    x_to = state.keypoints(1,1:num_old_keypoints);
-    y_from = state.previous_keypoints(2,:);
-    y_to = state.keypoints(2,1:num_old_keypoints);
-    plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
-    hold on;
-    x_from = state.previous_candidate_keypoints(1,:);
-    x_to = state.candidate_keypoints(1,1:num_old_candidate_keypoints);
-    y_from = state.previous_candidate_keypoints(2,:);
-    y_to = state.candidate_keypoints(2,1:num_old_candidate_keypoints);
-    plot([x_from; x_to], [y_from; y_to], 'y-', 'Linewidth', 3);
-    hold off;
-    subplot(2,2,3);
-    if state.init_counter <= init_counter
-        plot(state.pose(1,4),state.pose(3,4),'mo', 'MarkerSize', 10); %simple birds-eye view of our path
-    else
-        plot(state.pose(1,4),state.pose(3,4),'rx');
-    end
-    hold on
-    if(ds ~= 1 && ds ~= 3) %no ground truth for malaga dataset
-        plot(ground_truth(i,1),ground_truth(i,2),'bx');
-    end
-    legend('estimated path', 'ground truth');
-    axis equal
-    
-    % Makes sure that plots refresh.
-    pause(0.01);
+    path(:,i-range(1)+1) = state.pose(:,4);
+    reinit_mask(:,i-range(1)+1) = state.init_counter <= init_counter;
     
     prev_img = image;
     
     init_counter = state.init_counter;
 end
+toc
+figure(1)
+plot(path(1,~reinit_mask),path(3,~reinit_mask),'rx');
+hold on
+plot(path(1,reinit_mask),path(3,reinit_mask),'mo', 'MarkerSize', 10);
+hold on
+if(ds ~= 1) %no ground truth for malaga dataset
+    plot(ground_truth(range,1),ground_truth(range,2),'bx');
+end
+legend('estimated path', 'reinit', 'ground truth');
+axis equal
+hold off
