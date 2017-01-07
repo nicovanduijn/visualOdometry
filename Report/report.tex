@@ -99,13 +99,13 @@ Our pipeline was primarily tested and tuned for the KITTI dataset. Figure~\ref{f
 To compare the performance of our various implementations, we decided to use the KITTI dataset as a benchmark. In this section we will compare three different runs that showcase various trade-offs. First, we discuss our first working pipeline, without including bundle adjustment and periodic re-initialization. Then we compare it to more advanced versions, namely with added bundle adjustment and periodic re-initialization.
 
 \subsubsection{No Bundle Adjustment, No Periodic Re-initialization}
-Figure~\ref{fig:nobanoinit} shows our first working implementation, without the added bundle adjustment or periodic re-initialization. It is apparent that the scale drifts significantly, especially during the time where the car is standing still. Also sharp turns tend to be problematic, and we can see that the pipeline fails almost completely in the top right corner of Figure~\ref{fig:nobanoinit}.
+Figure~\ref{fig:nobanoinit} shows our first working implementation, without the added bundle adjustment or periodic re-initialization. It is apparent that the scale drifts significantly. In the middle of the plot, after the first right turn we notice a large deviation from the ground truth. Also the angles during the turns tend to be problematic, which accumulates errors as the pipeline progresses.
 
 \subsubsection{No Bundle Adjustment, Periodic Re-initialization}
-It is clear that our pipeline can only be accurate up to a scale, since we are using monocular images only. The scale is estimated during initialization. This scale can drift as the pipeline advances. When comparing the scale from Figure~\ref{fig:nobainit} to Figure~\ref{fig:nobanoinit}, it is clear that the scale drifts much less, this is because we are periodically re-initializing to obtain new landmarks.
+It is clear that our pipeline can only be accurate up to a scale, since we are using monocular images only. The scale is estimated during initialization. This scale can drift as the pipeline advances. When comparing the scale from Figure~\ref{fig:nobainit} to Figure~\ref{fig:nobanoinit}, it is clear that the scale drifts much less, this is because we are periodically re-initializing to obtain new landmarks. The ratio between most segments of the estimated path to the ground truth remains constant throughout the path. The absolute rotation during turns is still not perfect and the longer the pipeline progresses, the larger this effect becomes.
 
 \subsubsection{Bundle Adjustment, Periodic Re-initialization}
-Figure~\ref{fig:bareinit} shows our final implementation. When comparing to Figure~\ref{fig:nobainit} we can see small improvements in accuracy due to the added bundle adjustment.
+Figure~\ref{fig:bareinit} shows our final implementation. When comparing to Figure~\ref{fig:nobainit} we can see small improvements in accuracy due to the added bundle adjustment. The ratio of most segments compared to the ground truth looks very constant, and estimation of the orientation is slightly better. Since rotational errors accumulate to large position errors in long paths, accuracy in orientation estimation is crucial.
 
 \subsection{Other Datasets}
 We also ran our pipeline on various other datasets, including our own custom dataset recorded in the LFW building at ETH Zurich.
