@@ -1,8 +1,8 @@
 \documentclass[11pt]{article}
 
+% General packages
 \usepackage[utf8]{inputenc}
 \usepackage{comment} % Provides a comment environment
-\usepackage{geometry}
 \usepackage{hyperref} % Links
 
 % Math
@@ -16,17 +16,19 @@
 \usepackage{pgfplots}
 \newlength\figureheight 
 \newlength\figurewidth 
-\pgfplotsset{every axis legend/.style={at={(0.02,0.98)},anchor = north west}}
+%\pgfplotsset{every axis legend/.style={at={(0.02,0.98)},anchor = north west}} % Legends in the upper left corner
 
 % Layout
+\usepackage{geometry}
 \geometry{a4paper, margin=1.3cm}
 \setlength\parindent{0pt} % No intendation after line breaks
 \pagenumbering{arabic}
 
-% Title, authors, date, pagenumbering
+% Title, authors, date
 \title{Vision Algorithms for Mobile Robotics\\ (Mini-) Project}
 \author{Yvain de Viragh\\Marc Ochsner\\Nico van Duijn}
 \date{07.01.2016}
+
 
 \begin{document}
 \maketitle
@@ -102,6 +104,7 @@ Figure~\ref{fig:Kitti_entire_no_BA_no_reinit_thin} shows our first working imple
 	\centering
 	\setlength\figureheight{8cm} 
 	\setlength\figurewidth{11cm}
+	\pgfplotsset{every axis legend/.style={at={(0.02,0.98)},anchor = north west}}
 	\input{images/Kitti_entire_no_BA_no_reinit_thin.tikz}
 	\caption{Kitti -- no bundle adjustment, no periodic re-initialization}
 	\label{fig:Kitti_entire_no_BA_no_reinit_thin}
@@ -114,6 +117,7 @@ It is clear that our pipeline can only be accurate up to a scale, since we are u
 	\centering
 	\setlength\figureheight{8cm} 
 	\setlength\figurewidth{11cm}
+	\pgfplotsset{every axis legend/.style={at={(0.02,0.98)},anchor = north west}}
 	\input{images/Kitti_entire_no_BA_reinit_thin.tikz}
 	\caption{Kitti -- no bundle adjustment, periodic re-initialization}
 	\label{fig:Kitti_entire_no_BA_reinit_thin}
@@ -126,6 +130,7 @@ Figure~\ref{fig:Kitti_entire_BA_reinit_thin} shows our final implementation. Whe
 	\centering
 	\setlength\figureheight{8cm} 
 	\setlength\figurewidth{11cm}
+	\pgfplotsset{every axis legend/.style={at={(0.02,0.98)},anchor = north west}}
 	\input{images/Kitti_entire_BA_reinit_thin.tikz}
 	\caption{Kitti -- bundle adjustment, periodic re-initialization}
 	\label{fig:Kitti_entire_BA_reinit_thin}
@@ -138,7 +143,17 @@ We also ran our pipeline on various other datasets, including our own custom dat
 Figure~\ref{fig:eth} shows the plot of the estimated path during our own recorded dataset. Note that the corners should be right angles but our pipeline does not estimate this very well. This means our pipeline is not very robust to fast rotations, but estimates translations quite accurately.
 
 \subsubsection{Malaga}
-The malaga dataset is also a publicly available outdoor traffic environment dataset commonly used in the computer vision industry. The ground truth consists of a large oval-shaped path. Our results are shown in Figure~\ref{fig:malaga}, and resemble the ground truth very well with only minimal drift.
+The malaga dataset is also a publicly available outdoor traffic environment dataset commonly used in the computer vision industry. The ground truth consists of a large oval-shaped path. Our results are shown in Figure~\ref{fig:malaga_BA_reinit}, and resemble the ground truth very well with only minimal drift.
+
+\begin{figure}[h]
+	\centering
+	\setlength\figureheight{6cm} 
+	\setlength\figurewidth{8cm}
+	\pgfplotsset{every axis legend/.style={at={(0.98,0.98)},anchor = north east}}
+	\input{images/malaga_BA_reinit.tikz}
+	\caption{Malaga -- bundle adjustment, periodic re-initialization}
+	\label{fig:malaga_BA_reinit}
+\end{figure}
 
 \subsubsection{Parking}
 We also tested our pipeline on the provided "Parking" dataset. This dataset showed the worst performance of all datasets we tested, as can be seen in Figure~\ref{fig:parking}. The main reason for this is that we tuned our parameters to work best for camera motion in the $\hat{z}$ direction of the camera frame, while the parking dataset consists of pure motion in $\hat{x}$.
