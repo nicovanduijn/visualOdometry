@@ -20,6 +20,11 @@
 \usepackage{isomath}
 \newcommand{\mat}{\matrixsym}
 
+% Matlab Plots
+\usepackage{pgfplots}
+\newlength\figureheight 
+\newlength\figurewidth 
+
 \begin{document}
 \maketitle
 %\pagenumbering{gobble}
@@ -102,5 +107,15 @@ To compare the performance of our various implementations, we decided to use the
 \subsubsection{Bundle Adjustment, No Periodic Re-initialization}
 
 \subsubsection{No Bundle Adjustment, Periodic Re-initialization}
+
+
+\begin{figure}
+	\centering
+	\setlength\figureheight{6cm} 
+	\setlength\figurewidth{6cm}
+	\input{mysphere.tikz}
+	\caption{A plot of a sphere}
+	\label{fig:sphere}
+\end{figure}
 
 \end{document}
