@@ -10,7 +10,7 @@ nonmaximum_supression_radius = params.extract_nonmaximum_supression_radius;
 min_distance = params.extract_min_distance; % Minimum distance new keypoints must have w.r.t. existing ones
 
 %% Implementation with own code
-% tic
+
 % harris_scores = harris(current_image, harris_patch_size, harris_kappa);
 % harris_keypoints = flipud(selectKeypoints(harris_scores, num_keypoints, nonmaximum_supression_radius));
 % existing_keypoints = [current_keypoints(:,discard == 0) new_keypoints candidate_keypoints(:,candidate_discard == 0)];
@@ -18,7 +18,6 @@ min_distance = params.extract_min_distance; % Minimum distance new keypoints mus
 % new_candidate_keypoints = harris_keypoints(:,min(distances,[],2) > min_distance);
 % new_candidate_keypoints_1 = new_candidate_keypoints;
 % new_candidate_pose_1 = repmat(current_pose(:),1,size(new_candidate_keypoints,2));
-% toc
 
 %% Implementation with Matlab function
 

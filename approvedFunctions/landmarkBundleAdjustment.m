@@ -78,7 +78,6 @@ end
 
 adjusted_landmarks = [P new_landmarks];
 
-
 %% Plot Landmarks
 subplot(2,2,4);
 plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go')
