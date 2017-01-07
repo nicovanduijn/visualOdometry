@@ -5,7 +5,7 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking
+ds = 2; % 0: KITTI, 1: Malaga, 2: parking, 3: ETH
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
@@ -48,7 +48,7 @@ elseif ds == 3
     assert(exist('eth_path', 'var') ~= 0);
     K = (csvread([eth_path '/K.txt']))';
     params =ethParams();
-    last_frame = 866;
+    last_frame = 433; % 866
 
 else
     assert(false);
@@ -155,10 +155,10 @@ end
 figure(1)
 plot(path(1,~reinit_mask),path(3,~reinit_mask),'r','DisplayName','estimated path')
 hold on
-plot(path(1,reinit_mask),path(3,reinit_mask),'mo','MarkerSize',5,'DisplayName','reinitialization')
-hold on
+% plot(path(1,reinit_mask),path(3,reinit_mask),'mo','MarkerSize',5,'DisplayName','reinitialization')
+% hold on
 axis equal
-if(ds ~= 1 && ds ~=3) %no ground truth for malaga dataset
+if(ds ~= 1 && ds ~=3) %no ground truth for malaga and ETH dataset
     plot(ground_truth(range,1),ground_truth(range,2),'b','DisplayName','ground truth')
 end
 legend('show')
