@@ -111,12 +111,13 @@ Figure~\ref{fig:bareinit} shows our final implementation. When comparing to Figu
 We also ran our pipeline on various other datasets, including our own custom dataset recorded in the LFW building at ETH Zurich.
 
 \subsubsection{ETH}
+Figure~\ref{fig:eth} shows the plot of the estimated path during our own recorded dataset. Note that the corners should be right angles but our pipeline does not estimate this very well. This means our pipeline is not very robust to fast rotations, but estimates translations quite accurately.
 
 \subsubsection{Malaga}
-
-
+The malaga dataset is also a publicly available outdoor traffic environment dataset commonly used in the computer vision industry. The ground truth consists of a large oval-shaped path. Our results are shown in Figure~\ref{fig:malaga}, and resemble the ground truth very well with only minimal drift.
 
 \subsubsection{Parking}
+We also tested our pipeline on the provided "Parking" dataset. This dataset showed the worst performance of all datasets we tested, as can be seen in Figure~\ref{fig:parking}. The main reason for this is that we tuned our parameters to work best for camera motion in the $\hat{z}$ direction of the camera frame, while the parking dataset consists of pure motion in $\hat{x}$.
 
 
 \begin{figure}
