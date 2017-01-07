@@ -27,7 +27,7 @@
 % Title, authors, date
 \title{Vision Algorithms for Mobile Robotics\\ (Mini-) Project}
 \author{Yvain de Viragh\\Marc Ochsner\\Nico van Duijn}
-\date{07.01.2016}
+\date{07.01.2017}
 
 
 \begin{document}
@@ -166,8 +166,17 @@ The malaga dataset is also a publicly available outdoor traffic environment data
 \end{figure}
 
 \subsubsection{Parking}
-We also tested our pipeline on the provided "Parking" dataset. This dataset showed the worst performance of all datasets we tested, as can be seen in Figure~\ref{fig:parking}. The main reason for this is that we tuned our parameters to work best for camera motion in the $\hat{z}$ direction of the camera frame, while the parking dataset consists of pure motion in $\hat{x}$.
+We also tested our pipeline on the provided "Parking" dataset. This dataset showed the worst performance of all datasets we tested, as can be seen in Figure~\ref{fig:parking_BA_reinit}. The main reason for this is that we tuned our parameters to work best for camera motion in the $z$ direction of the camera frame, while the parking dataset consists of pure motion in $x$.
 
+\begin{figure}[h]
+	\centering
+	\setlength\figureheight{6cm} 
+	\setlength\figurewidth{8cm}
+	\pgfplotsset{every axis legend/.style={at={(0.03,0.05)},anchor = south west}}
+	\input{images/parking_BA_reinit.tikz}
+	\caption{Parking -- bundle adjustment, no periodic re-initialization}
+	\label{fig:parking_BA_reinit}
+\end{figure}
 
 \section*{Some Comments on the Project}
 We consider the project as a valuable experience, which helped a lot in understanding the matter and, by putting together all the building blocks, seeing the bigger picture. Besides that, having implemented a working pipeline oneself is pretty cool! However, in our opinion the time and effort required does not very well correlate with the 4 credit points granted. These should either be increased to 6 or you could consider skipping the oral exam and making the project account for the full grade. We would however not encourage to drop the project or reduce the number of exercises or their workload - although pretty time-consuming they are well done and definitely worth the effort!
