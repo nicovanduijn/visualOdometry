@@ -12,6 +12,7 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %       * discard 1xN
 %       * candidate_discard 1xM
 %       * init_counter 1x1
+%       * landmarkBundleAdjustment_struct 
 %   - previous_image: XxY
 %   - current_image: XxY
 %
@@ -19,22 +20,17 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %   - current_state: Struct
 %   - current_pose: 4x3 non-homogenous matrix representing pose [R|T]
 
-%% Paramters
+%% Parameters
 global params;
-discard_max = params.proc_discard_max; % Points with a higher vote are discarded (currently: random choice)
-candidate_discard_max = params.proc_candidate_discard_max; % Points with a higher vote are discarded (currently: random choice)
+discard_max = params.proc_discard_max; % Points with a higher vote are discarded
+candidate_discard_max = params.proc_candidate_discard_max; % Points with a higher vote are discarded
 min_keypoint_threshold = params.proc_min_keypoint_threshold;
 re_init_after = params.proc_re_init_after;
 
 %% Preliminary stuff
-
 discard = previous_state.discard;
 candidate_discard = previous_state.candidate_discard;
 K = previous_state.K;
-
-% Test whether landmarks which are far away should be discarded
-% P_C = previous_state.landmarks(1:3,:) - previous_state.pose(:,4);
-% discard(sqrt(dot(P_C,P_C)) > 50) = inf;
 
 %% Apply KLT on current_image
 [current_keypoints,current_candidate_keypoints,discard,candidate_discard] = keypointTracking(previous_state.keypoints,...
@@ -94,11 +90,12 @@ candidate_del = candidate_discard > candidate_discard_max;
 current_state.landmarkBundleAdjustment_struct = current_landmarkBundleAdjustment_struct;
 
 
-% current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks];
+% current_state.landmarks = [previous_state.landmarks(:,~del)
+% new_landmarks]; %(now done in BA)
 current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
 current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
 current_state.previous_candidate_keypoints = previous_state.candidate_keypoints(:,~new_mask); % For plotting only
-    current_state.previous_candidate_keypoints = current_state.previous_candidate_keypoints(:,~candidate_del);
+current_state.previous_candidate_keypoints = current_state.previous_candidate_keypoints(:,~candidate_del);
 current_state.discard = [discard(:,~del) zeros(1,size(new_keypoints,2))];
 current_state.candidate_keypoints = [updated_candidate_keypoints(:,~candidate_del) new_candidate_keypoints];
 current_state.new_candidate_keypoints = new_candidate_keypoints; % For plotting only

@@ -13,7 +13,6 @@ max_observations = params.lba_max_observations; % 10
 max_reprojection_error = params.lba_max_reprojection_error; % 1
 
 %% Code
-
 num_landmarks = size(landmarks,2) - sum(del);
 num_new_landmarks = size(new_landmarks,2);
 
@@ -33,9 +32,6 @@ M1 = K*current_pose_inv;
 
 landmarks = landmarks(:,~del);
 
-% disp('Landmark bundle adjustment:')
-% disp(['    Maximum value in counter: ' num2str(max(counter))])
-
 P = NaN(4,num_landmarks);
 adjusted = false(1,num_landmarks);
 
@@ -51,7 +47,6 @@ for j=1:num_landmarks
             if reprojectionError(previous_keypoints(:,j,i),landmarks(:,j),M2) < max_reprojection_error % Only take points, which reproject close enough
                A2 = [A2; A2_temp]; 
             end
-
         end
         
         if ~isempty(A2)
@@ -73,28 +68,25 @@ for j=1:num_landmarks
     end
 end
 
-% disp(['    Number of landmarks: ' num2str(num_landmarks)])
-% disp(['    Number of adjusted landmarks: ' num2str(sum(adjusted))])
-
 adjusted_landmarks = [P new_landmarks];
 
 %% Plot Landmarks
-% subplot(2,2,4);
-% plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go')
-% hold on
-% plot(landmarks(1,adjusted),landmarks(3,adjusted), 'mo')
-% hold on
-% x_from = landmarks(1,adjusted);
-% x_to = P(1,adjusted);
-% z_from = landmarks(3,adjusted);
-% z_to = P(3,adjusted);
-% plot([x_from; x_to], [z_from; z_to], 'm-', 'Linewidth', 1);
-% hold on
-% plot(P(1,adjusted),P(3,adjusted), 'bx')
-% hold on
-% plot(current_pose(1,4),current_pose(3,4),'rx')
-% axis equal
-% hold off
+subplot(2,2,4);
+plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go')
+hold on
+plot(landmarks(1,adjusted),landmarks(3,adjusted), 'mo')
+hold on
+x_from = landmarks(1,adjusted);
+x_to = P(1,adjusted);
+z_from = landmarks(3,adjusted);
+z_to = P(3,adjusted);
+plot([x_from; x_to], [z_from; z_to], 'm-', 'Linewidth', 1);
+hold on
+plot(P(1,adjusted),P(3,adjusted), 'bx')
+hold on
+plot(current_pose(1,4),current_pose(3,4),'rx')
+axis equal
+hold off
 
 % Output
 current_landmarkBundleAdjustment_struct.poses = [current_pose(:) previous_landmark_poses(:,1:max_observations-1)];

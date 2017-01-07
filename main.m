@@ -5,14 +5,13 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
-malaga_path = 'data/malaga';
-eth_path = 'data/eth';
-addpath('approvedFunctions');
-use_init = true;
-global params;
+malaga_path = 'data/malaga'; % path for malaga
+eth_path = 'data/eth'; %path for our own data set
+addpath('approvedFunctions'); % functions we need
+global params; % make parameters globally available
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -44,18 +43,16 @@ elseif ds == 2
     ground_truth = ground_truth(:, [end-8 end]);
     params =parkingParams();
 elseif ds == 3
-    % Path containing images, depths and all...
+    % Path containing images
     assert(exist('eth_path', 'var') ~= 0);
     K = (csvread([eth_path '/K.txt']))';
     params =ethParams();
     last_frame = 866;
-
 else
     assert(false);
 end
 
 %% Bootstrap
-% need to set bootstrap_frames
 if ds == 0
     bootstrap_frames = [1,3];
     img0 = imread([kitti_path '/00/image_0/' ...
@@ -63,7 +60,7 @@ if ds == 0
     img1 = imread([kitti_path '/00/image_0/' ...
         sprintf('%06d.png',bootstrap_frames(2))]);
 elseif ds == 1
-    bootstrap_frames = [1;3]; % for now, just use first and third frame
+    bootstrap_frames = [1;3]; %use first and third frame
     img0 = rgb2gray(imread([malaga_path ...
         '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
         left_images(bootstrap_frames(1)).name]));
@@ -71,48 +68,25 @@ elseif ds == 1
         '/malaga-urban-dataset-extract-07_rectified_800x600_Images/' ...
         left_images(bootstrap_frames(2)).name]));
 elseif ds == 2
-    bootstrap_frames = [1;3]; % for now, just use first and third frame
+    bootstrap_frames = [1;3]; %use first and third frame
     img0 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
 elseif ds == 3
-    bootstrap_frames = [1;5]; % for now, just use first and third frame
+    bootstrap_frames = [1;5]; % for now, just use first and fifth frame
     img0 = imread([eth_path ...
         sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(1))]);
     img1 = imread([eth_path ...
         sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(2))]);
-
 else
     assert(false);
 end
 
 %% initialize with bootstrap
-if(use_init)
-    [state] = initializePose(img0, img1, K);
-    prev_img = img1;
-else
-    % hard-coded initialization with ground truth
-    bootstrap_frames = [0, 0]; % so we start VO with frame 1
-    prev_img = img0;
-    state = struct;
-    state.landmarks = load('/data/kitti/p_W_landmarks.txt');
-    state.landmarks = homogenize(state.landmarks');
-    state.keypoints = load('/data/kitti/keypoints.txt');
-    state.keypoints = [state.keypoints(:,2)';state.keypoints(:,1)'];
-    temp = load([kitti_path '/poses/00.txt']);
-    temp = poseVectorToTransformationMatrix(temp(2,:));
-    state.pose = reshape(temp(1:3,1:4),3,4);
-    state.candidate_keypoints = zeros(2,0)';
-    state.candidate_keypoints_1= zeros(2,0)';
-    state.candidate_pose_1 = zeros(12,0)';
-    state.K = K;
-    state.discard = zeros(1,size(state.landmarks,2));
-    state.candidate_discard = zeros(1,size(state.candidate_keypoints,2));
-end
-
+[state] = initializePose(img0, img1, K);
+prev_img = img1;
 state.landmarkBundleAdjustment_struct = struct();
-
 
 %% Continuous operation
 init_counter = 0;
@@ -181,6 +155,5 @@ for i = range
     pause(0.01);
     
     prev_img = image;
-    
     init_counter = state.init_counter;
 end
