@@ -72,7 +72,7 @@ We found that for large camera motion, the Lucas-Kanade Tracker would often fail
 During our evaluation, we also tested a procedure where the pipeline regularly re-initializes after a set number of frames. This yields very good results, but slows down the pipeline significantly.
 
 \subsubsection{Custom Dataset Testing}
-As an additional bonus feature we made a video with a mobile phone camera. We used the MATLAB toolbox for camera calibration and image undistortion.
+As an additional bonus feature we made a video in the LFW building of the ETH with a mobile phone camera. To calibrate this camera we used the camera calibration app from the Computer Vision Toolbox from Matlab. The high frame rate of the used camera leads to slow movements between the frames. To overcome this issue we skipped some of the frames to get a faster movement. At the end we get a reasonable outcome as shown in the video.
 
 \section{Parameters and Tuning}
 \subsection{RANSAC Iterations}
