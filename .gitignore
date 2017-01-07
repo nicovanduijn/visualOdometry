@@ -4,6 +4,7 @@ data/
 *.aux
 *.log
 *.gz
+*.pdf
 =======
 data/
 processFrame.asv
