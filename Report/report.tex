@@ -99,14 +99,14 @@ Our pipeline was primarily tested and tuned for the KITTI dataset. Figure X show
 To compare the performance of our various implementations, we decided to use the KITTI dataset as a benchmark. In this section we will compare four different runs that showcase various trade-offs. First, we discuss our full integration including bundle adjustment and periodic re-initialization. Then we compare it to previous versions of our pipeline, namely with deactivated bundle adjustment, deactivated re-initialization and a combination of the two.
 
 \subsubsection{No Bundle Adjustment, No Periodic Re-initialization}
-Figure~\ref{fig:nobanoinit} shows our first working implementation, without the added bundle adjustment or periodic re-initialization. It is apparent that the scale drifts significantly, 
-
-\subsubsection{Bundle Adjustment, No Periodic Re-initialization}
+Figure~\ref{fig:nobanoinit} shows our first working implementation, without the added bundle adjustment or periodic re-initialization. It is apparent that the scale drifts significantly, especially during the time where the car is standing still. Also sharp turns tend to be problematic, and we can see that the pipeline fails almost completely in the top right corner of Figure~\ref{fig:nobanoinit}.
 
 \subsubsection{No Bundle Adjustment, Periodic Re-initialization}
+It is clear that our pipeline can only be accurate up to a scale, since we are using monocular images only. The scale is estimated during initialization. This scale can drift as the pipeline advances. It is clear from the graph that the scale only drifts slightly, this is because we are periodically re-initializing to obtain new landmarks.
 
 \subsubsection{Bundle Adjustment, Periodic Re-initialization}
-Figure~\ref{fig:bareinit} shows the ground truth in blue and our final implementation's best estimate of the path in red. It is clear that our pipeline can only be accurate up to a scale, since we are using monocular images only. The scale is estimated during initialization. This scale can drift as the pipeline advances. It is clear from the graph that the scale only drifts slightly, this is because we are periodically re-initializing to obtain new landmarks.
+Figure~\ref{fig:bareinit} shows our final implementation's best estimate of the path in red. 
+
 
 
 \begin{figure}
