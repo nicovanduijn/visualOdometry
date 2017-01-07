@@ -5,7 +5,7 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 2; % 0: KITTI, 1: Malaga, 2: parking
+ds = 0; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
@@ -115,8 +115,13 @@ state.landmarkBundleAdjustment_struct = struct();
 
 
 %% Continuous operation
+
+number_of_frames = last_frame; % last_frame
+
+range = (bootstrap_frames(2)+1):number_of_frames;
 init_counter = 0;
-range = (bootstrap_frames(2)+1):250;
+path = zeros(3,range(end)-range(1));
+reinit_mask = false(1,range(end)-range(1));
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
