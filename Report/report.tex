@@ -24,6 +24,7 @@
 \usepackage{pgfplots}
 \newlength\figureheight 
 \newlength\figurewidth 
+\pgfplotsset{every axis legend/.style={at={(0.02,0.98)},anchor = north west}}
 
 \begin{document}
 \maketitle
@@ -107,15 +108,40 @@ It is clear that our pipeline can only be accurate up to a scale, since we are u
 \subsubsection{Bundle Adjustment, Periodic Re-initialization}
 Figure~\ref{fig:bareinit} shows our final implementation's best estimate of the path in red. 
 
-
-
-\begin{figure}
+\begin{figure}[h]
 	\centering
 	\setlength\figureheight{10cm} 
 	\setlength\figurewidth{15cm}
-	\input{images/test.tikz}
-	\caption{A plot of a sphere}
-	\label{fig:sphere}
+	\input{images/Kitti_entire_BA_no_reinit_thin.tikz}
+	\caption{Kitti entire BA no reinit thin}
+	\label{fig:Kitti_entire_BA_no_reinit_thin}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\setlength\figureheight{10cm} 
+	\setlength\figurewidth{15cm}
+	\input{images/Kitti_entire_BA_reinit_thin.tikz}
+	\caption{Kitti entire BA reinit thin}
+	\label{fig:Kitti_entire_BA_reinit_thin}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\setlength\figureheight{10cm} 
+	\setlength\figurewidth{15cm}
+	\input{images/Kitti_entire_no_BA_no_reinit_thin.tikz}
+	\caption{Kitti entire no BA no reinit thin}
+	\label{fig:Kitti_entire_no_BA_no_reinit_thin}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\setlength\figureheight{10cm} 
+	\setlength\figurewidth{15cm}
+	\input{images/Kitti_entire_no_BA_reinit_thin.tikz}
+	\caption{Kitti entire no BA reinit thin}
+	\label{fig:Kitti_entire_no_BA_reinit_thin}
 \end{figure}
 
 \end{document}
