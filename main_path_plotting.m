@@ -5,11 +5,7 @@ close all
 rng(1);
 
 % set the dataset to use
-<<<<<<< HEAD
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
-=======
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
->>>>>>> origin/master
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
@@ -149,21 +145,6 @@ for i = range
     
     init_counter = state.init_counter;
 end
-<<<<<<< HEAD
-
-=======
-toc
-% figure(1)
-% plot(path(1,~reinit_mask),path(3,~reinit_mask),'r');
-% hold on
-% plot(path(1,reinit_mask),path(3,reinit_mask),'mo', 'MarkerSize', 10);
-% hold on
-% if(ds ~= 1) %no ground truth for malaga dataset
-%     plot(ground_truth(range,1),ground_truth(range,2),'b');
-% end
-% legend('estimated path', 'reinit', 'ground truth');
-% axis equal
-% hold off
 
 %% Plots
 figure(1)
