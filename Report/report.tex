@@ -140,7 +140,17 @@ Figure~\ref{fig:Kitti_entire_BA_reinit_thin} shows our final implementation. Whe
 We also ran our pipeline on various other datasets, including our own custom dataset recorded in the LFW building at ETH Zurich.
 
 \subsubsection{ETH}
-Figure~\ref{fig:eth} shows the plot of the estimated path during our own recorded dataset. Note that the corners should be right angles but our pipeline does not estimate this very well. This means our pipeline is not very robust to fast rotations, but estimates translations quite accurately.
+Figure~\ref{fig:ETH_BA_no_reinit} shows the plot of the estimated path during our own recorded dataset. Note that the corners should be right angles but our pipeline does not estimate this very well. This means our pipeline is not very robust to fast rotations, but estimates translations quite accurately.
+
+\begin{figure}[h]
+	\centering
+	\setlength\figureheight{8cm} 
+	\setlength\figurewidth{10cm}
+	\pgfplotsset{every axis legend/.style={at={(0.98,0.8)},anchor = north east}}
+	\input{images/ETH_BA_no_reinit.tikz}
+	\caption{ETH -- bundle adjustment, no periodic re-initialization}
+	\label{fig:ETH_BA_no_reinit}
+\end{figure}
 
 \subsubsection{Malaga}
 The malaga dataset is also a publicly available outdoor traffic environment dataset commonly used in the computer vision industry. The ground truth consists of a large oval-shaped path. Our results are shown in Figure~\ref{fig:malaga_BA_reinit}, and resemble the ground truth very well with only minimal drift.
