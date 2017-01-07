@@ -94,19 +94,31 @@ For the KITTI dataset we determined that a minimum angle of 1 degree and a maxim
 \section{Results and Discussion}
 In our pipeline evaluation, we tested the three datasets that were provided with the assignment, as well as our own custom dataset. We also tested with and without bundle adjustment in order to show its effectiveness. Furthermore, we enabled and disabled the continuous re-initialization to illustrate how it alleviates scale drift problems.
 
-Our pipeline was primarily tested and tuned for the KITTI dataset. Figure X shows our custom Z/X plot of the path estimated by our VO pipeline in red, as well as the ground truth provided as part of the dataset in blue. The top image shows the current frame with the successfully tracked key points highlighted with green lines, as well as the candidate key points in blue. The red marks are newly added landmarks. The bottom figure shows the current position with a red cross and the triangulated landmarks with green crosses.
+Our pipeline was primarily tested and tuned for the KITTI dataset. Figure~\ref{fig:overview} shows our custom Z/X plot of the path estimated by our VO pipeline in red, as well as the ground truth provided as part of the dataset in blue. The top image shows the current frame with the successfully tracked key points highlighted with green lines, as well as the candidate key points in blue. The red marks are newly added landmarks. The bottom figure shows the current position with a red cross and the triangulated landmarks with green crosses.
 
 \subsection{KITTI Dataset Comparison}
-To compare the performance of our various implementations, we decided to use the KITTI dataset as a benchmark. In this section we will compare four different runs that showcase various trade-offs. First, we discuss our full integration including bundle adjustment and periodic re-initialization. Then we compare it to previous versions of our pipeline, namely with deactivated bundle adjustment, deactivated re-initialization and a combination of the two.
+To compare the performance of our various implementations, we decided to use the KITTI dataset as a benchmark. In this section we will compare three different runs that showcase various trade-offs. First, we discuss our first working pipeline, without including bundle adjustment and periodic re-initialization. Then we compare it to more advanced versions, namely with added bundle adjustment and periodic re-initialization.
 
 \subsubsection{No Bundle Adjustment, No Periodic Re-initialization}
 Figure~\ref{fig:nobanoinit} shows our first working implementation, without the added bundle adjustment or periodic re-initialization. It is apparent that the scale drifts significantly, especially during the time where the car is standing still. Also sharp turns tend to be problematic, and we can see that the pipeline fails almost completely in the top right corner of Figure~\ref{fig:nobanoinit}.
 
 \subsubsection{No Bundle Adjustment, Periodic Re-initialization}
-It is clear that our pipeline can only be accurate up to a scale, since we are using monocular images only. The scale is estimated during initialization. This scale can drift as the pipeline advances. It is clear from the graph that the scale only drifts slightly, this is because we are periodically re-initializing to obtain new landmarks.
+It is clear that our pipeline can only be accurate up to a scale, since we are using monocular images only. The scale is estimated during initialization. This scale can drift as the pipeline advances. When comparing the scale from Figure~\ref{fig:nobainit} to Figure~\ref{fig:nobanoinit}, it is clear that the scale drifts much less, this is because we are periodically re-initializing to obtain new landmarks.
 
 \subsubsection{Bundle Adjustment, Periodic Re-initialization}
-Figure~\ref{fig:bareinit} shows our final implementation's best estimate of the path in red. 
+Figure~\ref{fig:bareinit} shows our final implementation. When comparing to Figure~\ref{fig:nobainit} we can see small improvements in accuracy due to the added bundle adjustment.
+
+\subsection{Other Datasets}
+We also ran our pipeline on various other datasets, including our own custom dataset recorded in the LFW building at ETH Zurich.
+
+\subsubsection{ETH}
+Figure~\ref{fig:eth} shows the plot of the estimated path during our own recorded dataset. Note that the corners should be right angles but our pipeline does not estimate this very well. This means our pipeline is not very robust to fast rotations, but estimates translations quite accurately.
+
+\subsubsection{Malaga}
+The malaga dataset is also a publicly available outdoor traffic environment dataset commonly used in the computer vision industry. The ground truth consists of a large oval-shaped path. Our results are shown in Figure~\ref{fig:malaga}, and resemble the ground truth very well with only minimal drift.
+
+\subsubsection{Parking}
+We also tested our pipeline on the provided "Parking" dataset. This dataset showed the worst performance of all datasets we tested, as can be seen in Figure~\ref{fig:parking}. The main reason for this is that we tuned our parameters to work best for camera motion in the $\hat{z}$ direction of the camera frame, while the parking dataset consists of pure motion in $\hat{x}$.
 
 \begin{figure}[h]
 	\centering
