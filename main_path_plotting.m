@@ -3,18 +3,16 @@ clear all % clean up
 clc
 close all
 rng(1);
-tic
+
 % set the dataset to use
 ds = 2; % 0: KITTI, 1: Malaga, 2: parking
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
-addpath('providedFunctions'); % add provided functions from exercise sessions
+eth_path = 'data/eth';
 addpath('approvedFunctions');
 use_init = true;
 global params;
-% addpath('nicosFunctions');
-
 
 if ds == 0
     % need to set kitti_path to folder containing "00" and "poses"
@@ -45,6 +43,13 @@ elseif ds == 2
     ground_truth = load([parking_path '/poses.txt']);
     ground_truth = ground_truth(:, [end-8 end]);
     params =parkingParams();
+elseif ds == 3
+    % Path containing images, depths and all...
+    assert(exist('eth_path', 'var') ~= 0);
+    K = (csvread([eth_path '/K.txt']))';
+    params =ethParams();
+    last_frame = 866;
+
 else
     assert(false);
 end
@@ -71,6 +76,13 @@ elseif ds == 2
         sprintf('/images/img_%05d.png',bootstrap_frames(1))]));
     img1 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
+elseif ds == 3
+    bootstrap_frames = [1;5]; % for now, just use first and third frame
+    img0 = imread([eth_path ...
+        sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(1))]);
+    img1 = imread([eth_path ...
+        sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(2))]);
+
 else
     assert(false);
 end
@@ -101,15 +113,10 @@ end
 
 state.landmarkBundleAdjustment_struct = struct();
 
+
 %% Continuous operation
-
 init_counter = 0;
-
-number_of_frames = last_frame; % last_frame
-range = (bootstrap_frames(2)+1):number_of_frames;
-
-path = zeros(3,range(end)-range(1));
-reinit_mask = false(1,range(end)-range(1));
+range = (bootstrap_frames(2)+1):250;
 for i = range
     fprintf('\n\nProcessing frame %d\n=====================\n', i);
     if ds == 0
@@ -121,6 +128,9 @@ for i = range
     elseif ds == 2
         image = im2uint8(rgb2gray(imread([parking_path ...
             sprintf('/images/img_%05d.png',i)])));
+    elseif ds == 3
+        image = imread([eth_path ...
+            sprintf('/Path/Path_ETH_%04d.png',2*i)]);
     else
         assert(false);
     end
@@ -135,30 +145,16 @@ for i = range
     
     init_counter = state.init_counter;
 end
-toc
-% figure(1)
-% plot(path(1,~reinit_mask),path(3,~reinit_mask),'r');
-% hold on
-% plot(path(1,reinit_mask),path(3,reinit_mask),'mo', 'MarkerSize', 10);
-% hold on
-% if(ds ~= 1) %no ground truth for malaga dataset
-%     plot(ground_truth(range,1),ground_truth(range,2),'b');
-% end
-% legend('estimated path', 'reinit', 'ground truth');
-% axis equal
-% hold off
 
 %% Plots
 figure(1)
 plot(path(1,~reinit_mask),path(3,~reinit_mask),'r','DisplayName','estimated path')
 hold on
-% plot(path(1,~reinit_mask),path(3,~reinit_mask),'rx','MarkerSize',3)
-% hold on
 plot(path(1,reinit_mask),path(3,reinit_mask),'mo','MarkerSize',5,'DisplayName','reinitialization')
 hold on
-if(ds ~= 1) %no ground truth for malaga dataset
+axis equal
+if(ds ~= 1 && ds ~=3) %no ground truth for malaga dataset
     plot(ground_truth(range,1),ground_truth(range,2),'b','DisplayName','ground truth')
 end
 legend('show')
-axis equal
 hold off

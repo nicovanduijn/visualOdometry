@@ -5,7 +5,7 @@ close all
 rng(1);
 
 % set the dataset to use
-ds = 0; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
+ds = 2; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga';
@@ -77,7 +77,7 @@ elseif ds == 2
     img1 = rgb2gray(imread([parking_path ...
         sprintf('/images/img_%05d.png',bootstrap_frames(2))]));
 elseif ds == 3
-    bootstrap_frames = [1;3]; % for now, just use first and third frame
+    bootstrap_frames = [1;5]; % for now, just use first and third frame
     img0 = imread([eth_path ...
         sprintf('/Path/Path_ETH_%04d.png',bootstrap_frames(1))]);
     img1 = imread([eth_path ...
@@ -130,7 +130,7 @@ for i = range
             sprintf('/images/img_%05d.png',i)])));
     elseif ds == 3
         image = imread([eth_path ...
-            sprintf('/Path/Path_ETH_%04d.png',i)]);
+            sprintf('/Path/Path_ETH_%04d.png',2*i)]);
     else
         assert(false);
     end
