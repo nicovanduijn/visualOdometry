@@ -54,7 +54,7 @@ for j=1:num_landmarks
                 adjusted(j) = true;
             else
                 P(:,j) = landmarks(:,j);
-                disp('    Point triangulated behind camera!')
+                % disp('    Point triangulated behind camera!')
             end
         else
             P(:,j) = landmarks(:,j);

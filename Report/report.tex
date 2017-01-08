@@ -47,7 +47,7 @@ After RANSAC has determined the largest set of inliers, the 8-point algorithm is
 Matching harris corners is computationally very costly, as the matching procedure increases quadratically with the number of features. Therefore we use Lucas-Kanade for key point tracking. We rely on the built-in Matlab function since it significantly boosts performance compared to the course implementation.
 
 \subsection{Feature discard}
-Features that could not be tracked with the Lucas-Kanade Tracker or were determined to be outliers by the P3P algorithm, are removed by incrementing their corresponding value in a voting array. Once a feature receives more than a certain threshold of votes, it is discarded. This ensures that temporary occlusions caused by moving objects in a scene do not cause complete loss of tracking and therefore improves robustness.
+Features that could not be tracked with the Lucas-Kanade Tracker or were determined to be outliers by the P3P algorithm, are removed by incrementing their corresponding value in a voting array. Once a feature receives more than a certain threshold of votes, it is discarded. The underlying idea is that temporary occlusions caused by moving objects in a scene do not cause complete loss of tracking, which should improve robustness.
 
 \subsection{P3P + RANSAC}
 After the location of the features in the new frame has been found, we use the P3P algorithm in combination with RANSAC to calculate the current pose of the camera. Again, we increment the “discard” voting array for all key points that have been determined to be outliers by RANSAC.
@@ -55,17 +55,18 @@ After the location of the features in the new frame has been found, we use the P
 \subsection{Feature Extraction}
 In order to have a good number of landmarks throughout the pipeline, we continuously extract new features. To do so, we extract the harris corners in the current frame, assert that they are a certain minimum distance away from the current key points and include them in our state as candidate key points. Along with the key points, we store the pose during their first respective observation.
 
-\subsection{Linear Triangulation} 
-In every iteration, we examine our candidate key points in order to determine whether they can be found in the current frame. If the angle between the bearing vectors of the current observation of the landmark and the first observation is large enough, we triangulate its position and add the feature to the key points in our state.
+\subsection{Linear Triangulation}
+In every iteration, we examine our candidate key points in order to triangulate the corresponding landmark. Provided the angle between the bearing vectors of the current and the first observation is large enough, the feature is added to the key points with associated landmark. We also verify that landmarks are not triangulated behind either of the two cameras. Furthermore we added the possibility to check whether the reprojection error is below a certain treshold.
+% In every iteration, we examine our candidate key points in order to determine whether they can be found in the current frame. If the angle between the bearing vectors of the current observation of the landmark and the first observation is large enough, we triangulate its position and add the feature to the key points in our state.
 
 \subsection{Bonus Features}
 \subsubsection{Structure-Only Bundle Adjustment}
 In order to increase the accuracy of the pose estimation and to combat scale drift, we run structure-only bundle adjustment on all landmarks which have already been observed a certain number of times. While this will likely not be as effective as full bundle adjustment, it is computationally significantly cheaper.\\
 Our approach is based on linear triangulation. Instead of only considering two point correspondences, we now take into account multiple ones. I.e., given $n$ point correspondences we have the following system of equations:
 \begin{equation*}
-\underbrace{\begin{bmatrix} p_1\times \mat{M}_1\\ \vdots \\ p_n\times \mat{M}_n \end{bmatrix}}_{\mat{A}} \underbrace{\begin{bmatrix} P_W \\ 1 \end{bmatrix}}_{\vec{x}} = 0 \quad \Rightarrow \quad \mat{A} \vec{x} = 0
+\underbrace{\begin{bmatrix} p_1^\times \mat{M}_1\\ \vdots \\ p_n^\times \mat{M}_n \end{bmatrix}}_{\mat{A}} \underbrace{\begin{bmatrix} P_W \\ 1 \end{bmatrix}}_{\vec{x}} = 0 \quad \Rightarrow \quad \mat{A} \vec{x} = 0
 \end{equation*}
-where $\mat{M}_i$ denotes the projection matrix of image $i$ and $p_i = [u,v,1]^T$ are homogeneous pixel coordinates. This linear-least squares problem is solved same as in the case for 2 point correspondences (i.e. using SVD). It is crucial for this approach to exclude any outliers. To this end, we only take into account observations where the reprojection error of the unadjusted landmark is sufficiently small. Furthermore a landmark is only adjusted if it could be tracked for at least 5 frames and we only consider the 10 most recent observations.
+where $\mat{M}_i$ denotes the projection matrix of image $i$ and $p_i = [u,v,1]^T$ are homogeneous pixel coordinates. This linear least-squares problem is solved for $\vec{x}$ same as in the case for 2 point correspondences (i.e. using SVD). It is crucial for this approach to exclude any outliers. To this end, we only take into account observations where the reprojection error of the unadjusted landmark is sufficiently small. Furthermore a landmark is only adjusted if it could be tracked for at least 5 frames and we only consider the 10 most recent observations.
 
 \subsubsection{Re-initialization}
 We found that for large camera motion, the Lucas-Kanade Tracker would often fail to find the old key points in the new frame. This would mean that we have to either use brute-force matching on all key points, and remove many outliers, which would be very costly. Therefore we decided to re-initialize the entire pipeline with the 8-point algorithm if the number of successfully tracked key points drops below a certain threshold. This is slow and costly, but yields very good results, along with very accurate landmarks. Furthermore we found that this procedure alleviates scale drift to a large extent. We achieved good results with a minimum keypoint number of 30.\\
@@ -76,11 +77,9 @@ As an additional bonus feature we made a video in the LFW building of the ETH wi
 
 \section{Parameters and Tuning}
 \subsection{RANSAC Iterations}
-In the initialization procedure, RANSAC is run in conjunction with the 8-point algorithm. This means we need RANSAC to run long enough such that we have a reasonable chance of selecting 8 inliers in our dataset. By plotting the number of inliers over lots of iterations, we determined that 1000 iterations is a good number to use.
+In the initialization procedure, RANSAC is run in conjunction with the 8-point algorithm. This means we need RANSAC to run long enough such that we have a reasonable chance of selecting 8 inliers in our dataset. By plotting the number of inliers over lots of iterations, we determined that 1000 iterations is a good number to use. We still found that there occasionally are outlier-matches in this procedure. They are very rare and can best be explained by two falsely matched key points that happen to lie on the same epipolar line. With a large number of inliers this did not affect the performance significantly.
 
-We still found that there occasionally are outlier-matches in this procedure. They are very rare and can best be explained by two falsely matched key points that happen to lie on the same epipolar line. With a large number of inliers this did not affect the performance significantly.
-
-During the P3P pose estimation, we require only 3 points to obtain a pose estimate. Therefore the chances of selecting a sample entirely consisting of inliers is much larger and we found that 80 RANSAC iterations are usually sufficient. However, we received bad results for the parking dataset and chose to there increase the number of RANSAC iterations to 500 and received much better results.
+During the P3P pose estimation, we require only 3 points to obtain a pose estimate. Therefore the chances of selecting a sample entirely consisting of inliers is much larger and we found that 80 RANSAC iterations are usually sufficient. However, we received bad results for the parking dataset and chose to there increase the number of RANSAC iterations to 500, which yielded much better results.
 
 \subsection{Harris Patch Size}
 During the exercises, we used a harris patch radius of 9 pixels. This showed to be a good compromise for our implementation, as larger patches significantly slow down the pipeline without adding significant improvements in accuracy.
@@ -93,7 +92,7 @@ For the KITTI dataset we determined that a minimum angle of 1 degree and a maxim
 \section{Results and Discussion}
 In our pipeline evaluation, we tested the three datasets that were provided with the assignment, as well as our own custom dataset. We also tested with and without bundle adjustment in order to show its effectiveness. Furthermore, we enabled and disabled the continuous re-initialization to illustrate how it alleviates scale drift problems.
 
-Our pipeline was primarily tested and tuned for the KITTI dataset. Figure~\ref{fig:overview} shows our custom Z/X plot of the path estimated by our VO pipeline in red, as well as the ground truth provided as part of the dataset in blue. The top image shows the current frame with the successfully tracked key points highlighted with green lines, as well as the candidate key points in yellow. The red marks are newly added landmarks and the blue marks candidate key points which could successfully be triangulated. The bottom figure shows the current position with a red cross and the triangulated landmarks with green crosses.
+Our pipeline was primarily tested and tuned for the KITTI dataset. Figure~\ref{fig:overview} shows our custom Z/X plot of the path estimated by our VO pipeline in red, as well as the ground truth provided as part of the dataset in blue. The top image shows the current frame with the successfully tracked key points highlighted with green lines, as well as the candidate key points in yellow. The red marks are newly added landmarks and the blue marks candidate key points which could successfully be triangulated. The bottom left figure shows the ground truth in blue and the estimated path in red (magenta circles denote points of reinitialization), while the right figure shows the current position with a red cross and the triangulated landmarks with green circles.
 
 \begin{figure}[!htb]
 	\centering
@@ -174,7 +173,7 @@ The malaga dataset is also a publicly available outdoor traffic environment data
 \end{figure}
 
 \subsubsection{Parking}
-We also tested our pipeline on the provided "Parking" dataset. This dataset showed the worst performance of all datasets we tested, as can be seen in Figure~\ref{fig:parking_BA_reinit}. The main reason for this is that we tuned our parameters to work best for camera motion in the $z$ direction of the camera frame, while the parking dataset consists of pure motion in $x$.
+We also tested our pipeline on the provided "Parking" dataset. This dataset showed the worst performance of all datasets we tested, as can be seen in Figure~\ref{fig:parking_BA_reinit}. The main reason for this is probably that we tuned our parameters to work best for camera motion in the $z$ direction of the camera frame, while the parking dataset consists of pure motion in $x$.
 
 \begin{figure}[!htb]
 	\centering
