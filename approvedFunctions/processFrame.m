@@ -18,7 +18,7 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %
 %   Outputs:
 %   - current_state: Struct
-%   - current_pose: 4x3 non-homogenous matrix representing pose [R|T]
+
 
 %% Parameters
 global params;
