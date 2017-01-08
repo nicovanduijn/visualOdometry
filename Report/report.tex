@@ -18,6 +18,8 @@
 \newlength\figurewidth 
 %\pgfplotsset{every axis legend/.style={at={(0.02,0.98)},anchor = north west}} % Legends in the upper left corner
 
+\usepackage{graphicx}
+
 % Layout
 \usepackage{geometry}
 \geometry{a4paper, margin=1.3cm}
@@ -92,7 +94,14 @@ For the KITTI dataset we determined that a minimum angle of 1 degree and a maxim
 \section{Results and Discussion}
 In our pipeline evaluation, we tested the three datasets that were provided with the assignment, as well as our own custom dataset. We also tested with and without bundle adjustment in order to show its effectiveness. Furthermore, we enabled and disabled the continuous re-initialization to illustrate how it alleviates scale drift problems.
 
-Our pipeline was primarily tested and tuned for the KITTI dataset. Figure~\ref{fig:overview} shows our custom Z/X plot of the path estimated by our VO pipeline in red, as well as the ground truth provided as part of the dataset in blue. The top image shows the current frame with the successfully tracked key points highlighted with green lines, as well as the candidate key points in yellow. The red marks are newly added landmarks and the blue marks candidate keypoints which could successfully be triangulated. The bottom figure shows the current position with a red cross and the triangulated landmarks with green crosses.
+Our pipeline was primarily tested and tuned for the KITTI dataset. Figure~\ref{fig:overview} shows our custom Z/X plot of the path estimated by our VO pipeline in red, as well as the ground truth provided as part of the dataset in blue. The top image shows the current frame with the successfully tracked key points highlighted with green lines, as well as the candidate key points in yellow. The red marks are newly added landmarks and the blue marks candidate key points which could successfully be triangulated. The bottom figure shows the current position with a red cross and the triangulated landmarks with green crosses.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/overview}
+	\caption{Overview of our custom plotting, here during the KITTI dataset.}
+	\label{fig:overview}
+\end{figure}
 
 \subsection{KITTI Dataset Comparison}
 To compare the performance of our various implementations, we decided to use the KITTI dataset as a benchmark. In this section we will compare three different runs that showcase various trade-offs. First, we discuss our first working pipeline, without including bundle adjustment and periodic re-initialization. Then we compare it to more advanced versions, namely with added bundle adjustment and periodic re-initialization.
