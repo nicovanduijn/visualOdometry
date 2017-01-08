@@ -12,7 +12,7 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %       * discard 1xN
 %       * candidate_discard 1xM
 %       * init_counter 1x1
-%       * landmarkBundleAdjustment_struct (struct)
+%       * landmarkBundleAdjustment_struct: struct
 %       * previous_keypoints (for plotting only)
 %       * previous_candidate_keypoints (for plotting only)
 %       * new_candidate_keypoints (for plotting only)
@@ -43,9 +43,9 @@ K = previous_state.K;
 %% Apply P3P + RANSAC on keypoints with an associated landmark
 [current_pose,discard] = poseEstimation(current_keypoints, previous_state.landmarks, previous_state.K, discard);
 
-
-%% Check if number of keypoints too low
+%% Reinitialization
 if(sum(discard==0) <= min_keypoint_threshold || previous_state.init_counter >= re_init_after)
+    
     if previous_state.init_counter >= re_init_after
         disp('Periodic re-initizalization...')
     else

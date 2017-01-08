@@ -1,13 +1,12 @@
 function [state] = initializePose(img_0, img_1, K )
-%INITIALIZE creates initial state and pose when given first two images of
+%INITIALIZEPOSE creates initial state and pose when given first two images of
 %dataset
-%   input two images img0 and img1
-% initialize(img0, img1) finds common harris corners and uses the 8-point
+%   input two images img0 and img1 and calibration matrix
+% initialize(img0, img1, K) finds common harris corners and uses the 8-point
 % algorithm with RANSAC in order to recover the world coordinate points of
 % the landmarks
 
-
-%% Parameters form exercise 3.
+%% Parameters
 global params;
 harris_patch_size = params.init_harris_patch_size;
 harris_kappa = params.init_harris_kappa;
@@ -18,7 +17,7 @@ num_keypoints = params.init_num_keypoints;
 num_it_ransac = params.init_num_it_ransac;
 pixel_tolerance = params.init_pixel_tolerance;
 
-%% find harris corners and descriptors in both images
+%% Find harris corners and descriptors in both images
 harris_0 = harris(img_0, harris_patch_size, harris_kappa);
 keypoints_0 = selectKeypoints( harris_0, num_keypoints, nonmaximum_supression_radius);
 descriptors_0 = describeKeypoints(img_0, keypoints_0, descriptor_radius);
@@ -34,7 +33,6 @@ keypoints_1 = flipud(keypoints_1);
 p_0 = homogenize(keypoints_0(:,i_0));
 p_1 = homogenize(keypoints_1(:,i_1));
 max_num_inliers = 0; % start with zero inliers
-
 
 %% Apply RANSAC
 for i = 1:num_it_ransac
@@ -55,9 +53,9 @@ for i = 1:num_it_ransac
     if nnz(is_inlier) > max_num_inliers && nnz(is_inlier) >= 8
         max_num_inliers = nnz(is_inlier);
         inlier_mask = is_inlier;
-        bestF=F;
+        % bestF=F;
     end
-    max_num_inliers_history(i) = max_num_inliers;
+    % max_num_inliers_history(i) = max_num_inliers;
 end
 
 %% Compute essential matrix from all inliers and recover R,T
@@ -75,7 +73,7 @@ end
 state = struct;
 state.pose = [R', -R'*T];
 state.landmarks = linearTriangulation(p_0(:,inlier_mask), p_1(:,inlier_mask),K*eye(3,4),K*[R,T]);
-del =  state.landmarks(3,:)<0; %delete points behind camera
+del =  state.landmarks(3,:)<0; % delete points behind camera
 state.landmarks(:,del) = [];
 state.keypoints = p_1(1:2,inlier_mask);
 state.keypoints(:,del)=[];
