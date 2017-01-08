@@ -121,39 +121,40 @@ for i = range
     subplot(2,2,1:2);
     imshow(image);
     hold on;
-    plot(state.keypoints(1,:), state.keypoints(2,:), 'gx');
+    plot(state.keypoints(1,:), state.keypoints(2,:), 'gx', 'DisplayName', 'keypoints');
     hold on;
     num_old_keypoints = size(state.previous_keypoints,2);
-    plot(state.keypoints(1,num_old_keypoints+1:end), state.keypoints(2,num_old_keypoints+1:end), 'bx');
+    plot(state.keypoints(1,num_old_keypoints+1:end), state.keypoints(2,num_old_keypoints+1:end), 'bx', 'DisplayName', 'new keypoints');
     hold on;
-    plot(state.new_candidate_keypoints(1,:), state.new_candidate_keypoints(2,:), 'rx');
+    plot(state.new_candidate_keypoints(1,:), state.new_candidate_keypoints(2,:), 'rx', 'DisplayName', 'new candidate keypoints');
     hold on;
     num_old_candidate_keypoints = size(state.previous_candidate_keypoints,2);
-    plot(state.candidate_keypoints(1,1:num_old_candidate_keypoints), state.candidate_keypoints(2,1:num_old_candidate_keypoints), 'yx');
+    plot(state.candidate_keypoints(1,1:num_old_candidate_keypoints), state.candidate_keypoints(2,1:num_old_candidate_keypoints), 'yx', 'DisplayName', 'candidate keypoints');
     hold on;
     x_from = state.previous_keypoints(1,:);
     x_to = state.keypoints(1,1:num_old_keypoints);
     y_from = state.previous_keypoints(2,:);
     y_to = state.keypoints(2,1:num_old_keypoints);
-    plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3);
+    plot([x_from; x_to], [y_from; y_to], 'g-', 'Linewidth', 3, 'HandleVisibility', 'off');
     hold on;
     x_from = state.previous_candidate_keypoints(1,:);
     x_to = state.candidate_keypoints(1,1:num_old_candidate_keypoints);
     y_from = state.previous_candidate_keypoints(2,:);
     y_to = state.candidate_keypoints(2,1:num_old_candidate_keypoints);
-    plot([x_from; x_to], [y_from; y_to], 'y-', 'Linewidth', 3);
+    plot([x_from; x_to], [y_from; y_to], 'y-', 'Linewidth', 3, 'HandleVisibility', 'off');
     hold off;
+    legend('show')
     subplot(2,2,3); % birds-eye view of our path
     if state.init_counter <= init_counter
-        plot(state.pose(1,4),state.pose(3,4),'mo', 'MarkerSize', 10);
+        plot(state.pose(1,4),state.pose(3,4),'mo', 'MarkerSize', 10, 'DisplayName', 're-initialization');
     else
-        plot(state.pose(1,4),state.pose(3,4),'rx');
+        plot(state.pose(1,4),state.pose(3,4),'rx', 'DisplayName', 'estimated path');
     end
     hold on
     if(ds ~= 1 && ds ~= 3) %no ground truth for malaga and ETH dataset
-        plot(ground_truth(i,1),ground_truth(i,2),'bx');
+        plot(ground_truth(i,1),ground_truth(i,2),'bx', 'DisplayName', 'ground truth');
     end
-    legend('estimated path', 'ground truth');
+    legend('show');
     axis equal
     
     pause(0.01); % makes sure that plots refresh.

@@ -7,7 +7,7 @@ global params;
 min_angle = params.triang_min_angle; % Degrees 
 max_angle = params.triang_max_angle; % Degrees
 min_iterations = params.triang_min_iterations; 
-max_reprojection_error = params.triang_max_reprojection_error; %
+max_reprojection_error = params.triang_max_reprojection_error;
 penalty = params.triang_penalty; % Penalty for points triangulated behind the camera
 
 %% Code
@@ -41,13 +41,14 @@ for j=1:num_points
     % Check for points triangulated behind the camera
     behind_camera(1,j) = current_pose_inv(3,:)*P(:,j) < 0 | pose_1_inv(3,:)*P(:,j) < 0;
     
+    % Check the reprojection error
     if reprojectionError(p1(1:2,j),P(:,j),M1) < max_reprojection_error &&...
             reprojectionError(p2(1:2,j),P(:,j),M2) < max_reprojection_error
         repro_reliable(j) = true;
     end
 end
 
-% Compute angle and compare with min_angle
+% Check the angle
 a = P(1:3,:) - repmat(current_pose(1:3,4),1,num_points);
 b = P(1:3,:) - candidate_pose_1(10:12,:);
 angle = acos(dot(a,b)./sqrt(dot(a,a).*dot(b,b)));

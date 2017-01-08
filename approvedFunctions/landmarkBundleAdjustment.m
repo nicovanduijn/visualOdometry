@@ -1,9 +1,5 @@
 function [adjusted_landmarks,current_landmarkBundleAdjustment_struct] = landmarkBundleAdjustment(...
     K,current_pose,current_keypoints,new_keypoints,landmarks,new_landmarks,previous_landmarkBundleAdjustment_struct,del)
-% Inputs:
-%   - previous_landmark_keypoints: 2 x num_landmarks x max _observations
-%   - previous_landmark_poses : 12 x num_landmarks x max_observations
-
 
 %% Parameters
 
@@ -72,21 +68,22 @@ adjusted_landmarks = [P new_landmarks];
 
 %% Plot Landmarks
 subplot(2,2,4);
-plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go')
+plot(landmarks(1,~adjusted),landmarks(3,~adjusted), 'go', 'DisplayName', 'landmarks')
 hold on
-plot(landmarks(1,adjusted),landmarks(3,adjusted), 'mo')
+plot(landmarks(1,adjusted),landmarks(3,adjusted), 'mo', 'DisplayName', 'unadjusted landmarks')
 hold on
 x_from = landmarks(1,adjusted);
 x_to = P(1,adjusted);
 z_from = landmarks(3,adjusted);
 z_to = P(3,adjusted);
-plot([x_from; x_to], [z_from; z_to], 'm-', 'Linewidth', 1);
+plot([x_from; x_to], [z_from; z_to], 'm-', 'Linewidth', 1, 'HandleVisibility', 'off');
 hold on
-plot(P(1,adjusted),P(3,adjusted), 'bx')
+plot(P(1,adjusted),P(3,adjusted), 'bx', 'DisplayName', 'adjusted landmarks')
 hold on
-plot(current_pose(1,4),current_pose(3,4),'rx')
+plot(current_pose(1,4),current_pose(3,4),'rx', 'DisplayName', 'current position')
 axis equal
 hold off
+legend('show')
 
 % Output
 current_landmarkBundleAdjustment_struct.poses = [current_pose(:) previous_landmark_poses(:,1:max_observations-1)];
