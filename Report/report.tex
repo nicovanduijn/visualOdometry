@@ -60,7 +60,7 @@ In every iteration, we examine our candidate key points in order to determine wh
 \subsection{Bonus Features}
 \subsubsection{Structure-Only Bundle Adjustment}
 In order to increase the accuracy of the pose estimation and to combat scale drift, we run structure-only bundle adjustment on all landmarks which have already been observed a certain number of times. While this will likely not be as effective as full bundle adjustment, it is computationally significantly cheaper.\\
-Our approach is based on linear triangulation, but instead of only considering two point correspondences takes in account multiple ones. I.e., given $n$ point correspondences we have the following system of equations:
+Our approach is based on linear triangulation. Instead of only considering two point correspondences, we now take into account multiple ones. I.e., given $n$ point correspondences we have the following system of equations:
 \begin{equation*}
 \underbrace{\begin{bmatrix} p_1^\times \mat{M}_1\\ \vdots \\ p_n^\times \mat{M}_n \end{bmatrix}}_{\mat{A}} \underbrace{\begin{bmatrix} P_W \\ 1 \end{bmatrix}}_{\vec{x}} = 0 \quad \Rightarrow \quad \mat{A} \vec{x} = 0
 \end{equation*}
@@ -71,7 +71,7 @@ We found that for large camera motion, the Lucas-Kanade Tracker would often fail
 During our evaluation, we also tested a procedure where the pipeline re-initializes on a regular basis. This yields very good results, but obviously slows down the pipeline.
 
 \subsubsection{Custom Dataset Testing}
-As an additional bonus feature we made a video in the LFW building of the ETH with a mobile phone camera. To calibrate this camera we used the camera calibration function from the Computer Vision Toolbox in Matlab. The high frame rate of the camera we used lead to small movements between the frames. To overcome this issue and speed up the pipeline, we skip every other frame. We achieved reasonably accurate results as can be seen in the video. The dataset from this video can be found \href{https://www.dropbox.com/sh/mhrpmllsdomer5p/AABb7Gz0JGaK-FXOYEMNzeGfa?dl=0}{\underline{here}}.
+As an additional bonus feature we made a video in the LFW building of the ETH with a mobile phone camera. To calibrate this camera we used the camera calibration function from the Computer Vision Toolbox in Matlab. Due to he high frame rate of the camera, we saw only small movements between the frames. To overcome this issue and speed up the pipeline, we skip every other frame. We achieved reasonably accurate results as can be seen in the video. The dataset from this video can be found \href{https://www.dropbox.com/sh/mhrpmllsdomer5p/AABb7Gz0JGaK-FXOYEMNzeGfa?dl=0}{\underline{here}}.
 
 \section{Parameters and Tuning}
 \subsection{RANSAC Iterations}
@@ -124,7 +124,7 @@ It is clear that our pipeline can only be accurate up to a scale, since we are u
 \end{figure}
 
 \subsubsection{Bundle Adjustment, Periodic Re-initialization}
-Figure~\ref{fig:Kitti_entire_BA_reinit_thin} shows our final implementation. When comparing to Figure~\ref{fig:Kitti_entire_no_BA_reinit_thin} we can see small improvements in accuracy due to the added bundle adjustment. The ratio of most segments compared to the ground truth looks very constant, and estimation of the orientation is slightly better. Since rotational errors accumulate to large position errors in long paths, accuracy in orientation estimation is crucial.
+Figure~\ref{fig:Kitti_entire_BA_reinit_thin} shows our final implementation. When comparing to Figure~\ref{fig:Kitti_entire_no_BA_reinit_thin} we can see small improvements in accuracy due to the added bundle adjustment. The ratio of most segments compared to the ground truth looks very constant, and estimation of the orientation is slightly better. Since rotational deviation accumulates to large position errors in long paths, accuracy in orientation estimation is crucial.
 
 \begin{figure}[h]
 	\centering
