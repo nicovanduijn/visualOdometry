@@ -1,11 +1,16 @@
 %% Setup
-clear all % clean up
-clc
+clear all
 close all
+clc
 rng(1);
 
-% set the dataset to use
+%--------------------------------------------------------------------------
+% Choose here which dataset to use
 ds = 0; % 0: KITTI, 1: Malaga, 2: parking, 3: Own(ETH)
+
+% No need to change anything below here (except if a different path should be set)
+%--------------------------------------------------------------------------
+
 parking_path = 'data/parking'; % path for parking dataset
 kitti_path = 'data/kitti'; % path for kitti dataset
 malaga_path = 'data/malaga'; % path for malaga
@@ -47,7 +52,7 @@ elseif ds == 3
     assert(exist('eth_path', 'var') ~= 0);
     K = (csvread([eth_path '/K.txt']))';
     params =ethParams();
-    last_frame = 866;
+    last_frame = 433; % Actually 866, but we only use every other image
 else
     assert(false);
 end
@@ -138,21 +143,20 @@ for i = range
     y_to = state.candidate_keypoints(2,1:num_old_candidate_keypoints);
     plot([x_from; x_to], [y_from; y_to], 'y-', 'Linewidth', 3);
     hold off;
-    subplot(2,2,3);
+    subplot(2,2,3); % birds-eye view of our path
     if state.init_counter <= init_counter
-        plot(state.pose(1,4),state.pose(3,4),'mo', 'MarkerSize', 10); %simple birds-eye view of our path
+        plot(state.pose(1,4),state.pose(3,4),'mo', 'MarkerSize', 10);
     else
         plot(state.pose(1,4),state.pose(3,4),'rx');
     end
     hold on
-    if(ds ~= 1 && ds ~= 3) %no ground truth for malaga dataset
+    if(ds ~= 1 && ds ~= 3) %no ground truth for malaga and ETH dataset
         plot(ground_truth(i,1),ground_truth(i,2),'bx');
     end
     legend('estimated path', 'ground truth');
     axis equal
     
-    % Makes sure that plots refresh.
-    pause(0.01);
+    pause(0.01); % makes sure that plots refresh.
     
     prev_img = image;
     init_counter = state.init_counter;

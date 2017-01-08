@@ -12,7 +12,10 @@ function [current_state] = processFrame(previous_state, previous_image, current_
 %       * discard 1xN
 %       * candidate_discard 1xM
 %       * init_counter 1x1
-%       * landmarkBundleAdjustment_struct 
+%       * landmarkBundleAdjustment_struct (struct)
+%       * previous_keypoints (for plotting only)
+%       * previous_candidate_keypoints (for plotting only)
+%       * new_candidate_keypoints (for plotting only)
 %   - previous_image: XxY
 %   - current_image: XxY
 %
@@ -42,11 +45,16 @@ K = previous_state.K;
 
 
 %% Check if number of keypoints too low
-if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_init_after)
+if(sum(discard==0) <= min_keypoint_threshold || previous_state.init_counter >= re_init_after)
+    if previous_state.init_counter >= re_init_after
+        disp('Periodic re-initizalization...')
+    else
+        disp('Too few keypoints! Re-initializing...')
+    end
+    
     current_state = initializePose(previous_image, current_image, K);
     current_state.pose = previous_state.pose* [current_state.pose; 0 0 0 1];
     current_state.landmarks = [previous_state.pose; 0 0 0 1] * current_state.landmarks;
-    disp('lost tracking! re-initializing VO pipeline...');
     
     current_state.landmarkBundleAdjustment_struct = struct();
     
@@ -62,6 +70,10 @@ if(sum(discard==0)<=min_keypoint_threshold || previous_state.init_counter >= re_
     current_state.candidate_keypoints_1 = [previous_state.candidate_keypoints_1(:,~candidate_del) new_candidate_keypoints_1];
     current_state.candidate_pose_1 = [previous_state.candidate_pose_1(:,~candidate_del) new_candidate_pose_1];
     current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,size(new_candidate_keypoints,2))];
+    
+    disp('Current pose: ')
+    disp(num2str(current_pose))
+    
 else
 
 %% Apply linear triangulation on keypoints without associated landmark
@@ -75,23 +87,25 @@ else
     current_image,current_keypoints,new_keypoints,updated_candidate_keypoints,current_pose,discard,candidate_discard);
 
 %% What is left to do
+
+% Display some information
 disp(['Number of new keypoints: ' num2str(size(new_keypoints,2))])
 disp(['Number of keypoints: ' num2str(size(current_keypoints,2))])
+disp('Current pose: ')
+disp(num2str(current_pose))
 
+% Discard
 candidate_discard = candidate_discard + 1; % Penalty for 'old' candidate features
 del = discard > discard_max;
 candidate_del = candidate_discard > candidate_discard_max;
 
-
-%% Landmarks only bundle adjustment
+% Landmarks only bundle adjustment
 [current_state.landmarks,current_landmarkBundleAdjustment_struct] = landmarkBundleAdjustment(...
     K,current_pose,current_keypoints,new_keypoints,previous_state.landmarks,new_landmarks,previous_state.landmarkBundleAdjustment_struct,del);
 
+% Build current state
 current_state.landmarkBundleAdjustment_struct = current_landmarkBundleAdjustment_struct;
-
-
-% current_state.landmarks = [previous_state.landmarks(:,~del)
-% new_landmarks]; %(now done in BA)
+% current_state.landmarks = [previous_state.landmarks(:,~del) new_landmarks]; %(now done in BA)
 current_state.keypoints = [current_keypoints(:,~del) new_keypoints];
 current_state.previous_keypoints = previous_state.keypoints(:,~del); % For plotting only
 current_state.previous_candidate_keypoints = previous_state.candidate_keypoints(:,~new_mask); % For plotting only
@@ -105,9 +119,6 @@ current_state.candidate_discard = [candidate_discard(:,~candidate_del) zeros(1,s
 current_state.pose = current_pose;
 current_state.K = K;
 current_state.init_counter = previous_state.init_counter + 1;
-
- disp('Current pose: ')
- disp(num2str(current_pose))
 end
 
 end

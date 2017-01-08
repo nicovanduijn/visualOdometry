@@ -1,5 +1,5 @@
 # visualOdometry
-Visual Odometry Pipeline implementedin MATLAB by Yvain de Viragh, Marc Ochsner and Nico van Duijn
+Visual Odometry Pipeline implemented in MATLAB by Yvain de Viragh, Marc Ochsner and Nico van Duijn
 
 An overview of the performance of this pipeline can be found at
 https://www.youtube.com/watch?v=7DpAWUQQgVU
@@ -38,7 +38,10 @@ state is defined as struct containing:
 %       * discard 1xN
 %       * candidate_discard 1xM
 %       * init_counter 1x1
-%       * landmarkBundleAdjustment_struct 
+%       * landmarkBundleAdjustment_struct: struct
+%       * previous_keypoints (for plotting only)
+%       * previous_candidate_keypoints (for plotting only)
+%       * new_candidate_keypoints (for plotting only)
 
 
 
